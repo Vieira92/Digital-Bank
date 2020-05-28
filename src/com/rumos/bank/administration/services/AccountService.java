@@ -1,149 +1,133 @@
 package com.rumos.bank.administration.services;
 
-import java.util.Scanner;
-
 import com.rumos.bank.administration.ADM;
 import com.rumos.bank.administration.MenuADM;
 import com.rumos.bank.administration.models.Account;
 import com.rumos.bank.administration.models.Client;
-import com.rumos.bank.administration.models.CreditCard;
-import com.rumos.bank.administration.models.DebitCard;
 
 public class AccountService {
-	private Scanner sc = new Scanner(System.in);
-
-	public Integer choose() {
-		System.out.println("1 - Yes" + "\n2 - Not");
-		Integer choose = sc.nextInt();
-		while (choose != 1 && choose != 2) {
-			System.out.print("\nWrong option. Choose again: ");
-			choose = sc.nextInt();
-		}
-		return choose;
-	}
+	private ClientService clientService = new ClientService();
+	private ADMservice admService = new ADMservice();
+	private DebitCardService debitCardService = new DebitCardService();
+	private CreditCardService creditCardService = new CreditCardService();
 
 	public Boolean verifyAccountCreditCards(Account account) {
-		if (account.getCreditCards() == null || account.getCreditCards().size() <= 2) {
+		if (account.getCreditCards().isEmpty() || account.getCreditCards().size() < 2) {
 			return true;
 		} else {
-			System.out.println("Accounts can´t have more than two Credit Cards");
+			System.out.println("\nAccounts can´t have more than two Credit Cards");
 			return false;
 		}
-
 	}
-	
-	public void firstDeposit(Account account) {
-		ClientService clientService = new ClientService();
-		MenuADM menuADM = new MenuADM(); 
+
+	public void firstDeposit(Account account, Client client) {
+		MenuADM menuADM = new MenuADM();
 		System.out.print("\nEnter the deposit value: ");
-		Double value = sc.nextDouble();
-		while(value < 50.00) {
-			System.out.println("The minimum value to open an account is 50.00 $");
+		double value = UI.getDouble();
+		while (value < 50.00) {
+			System.out.println("\nThe minimum value to open an account is 50.00 $");
 			System.out.println("Want to cancel?");
-			Integer option = choose();
-			if(option == 1) {
-				//um problema a conta e cancelada mas o cliente fica criado no sistema tenho que o apagar tambem
-				if(account.getMainTitular().getAccounts() == null) {
-					clientService.removeListClients(account.getMainTitular());
+			int choose = UI.choose();
+			if (choose == 1) {
+				if (client.getAccounts().isEmpty()) {
+					clientService.removeListClients(client);
 				}
-				removeListAccounts(account);
-				menuADM.displayMenu();
+				MenuADM.displayMenu();
 				menuADM.selection();
-			} else {
-				System.out.print("\nEnter the deposit value: ");
-				value = sc.nextDouble();
 			}
-		} 
+			System.out.print("\nEnter the deposit value: ");
+			value = UI.getDouble();
+		}
 		account.setBalance(value);
 	}
 
 	public Account newAccount(Client client) {
-		ADMservice admService = new ADMservice();
-		ClientService clientService = new ClientService();
-		DebitCardService debitCardService = new DebitCardService();
-		CreditCardService creditCardService = new CreditCardService();
 
 		Account account = new Account();
-		account.setMainTitular(client);
-		
-		firstDeposit(account);
-		
-		account.setAccountNumber(ADM.accountNumber());
-		client.addAccount(account);
 
-		System.out.println("\nNew account:" 
-						+ "\nMain Titular:" + client);
+		firstDeposit(account, client);
+		account.setMainTitular(client);
+		account.setAccountNumber(ADM.accountNumber());
 
 		System.out.println("\nDo you want Debit Card? ");
-		Integer option = choose();
+		int option = UI.choose();
 		if (option == 1) {
-			if (debitCardService.verifyDebitCard(client) == false) {
-				DebitCard debitCard = new DebitCard();
-				debitCard = debitCardService.newDebitCard(account, client);
-				System.out.println(debitCard);
-			}
+			debitCardService.newDebitCard(account, client);
 		}
 
 		System.out.println("\nDo you want Credit Card?");
-		option = choose();
+		option = UI.choose();
 		if (option == 1) {
-			if (creditCardService.verifyCreditCard(client) == false) {
-				CreditCard creditCard = new CreditCard();
-				creditCard = creditCardService.newCreditCard(account, client);
-				System.out.println(creditCard);
-			}
+			creditCardService.newCreditCard(account, client);
 		}
-		client.addAccount(account);
 
-		
+		secondTitulars(account);
+
+		client.addAccount(account);
+		addListAccounts(account);
+
+		System.out.println(account);
+		return account;
+	}
+
+	private void secondTitulars(Account account) {
 		System.out.println("\nSecundary Titulars?");
-		option = choose();
+		int option = UI.choose();
 		if (option == 1) {
-			Client otherClient = new Client();
 			System.out.println("\nMaximum of 4 secondary titulars" + "\nHow many titulars? ");
-			Integer number = sc.nextInt();
+			int number = UI.getInt();
 			while (number > 4 || number < 0) {
 				System.out.print("\nWrong option. Choose again: ");
-				number = sc.nextInt();
+				number = UI.getInt();
 			}
-
+			Client otherClient;
 			for (int i = 0; i < number; i++) {
 				System.out.println("\n1 - New client" + "\n2 - Existing client" + "\n3 - Pass");
-				option = sc.nextInt();
+				option = UI.getInt();
 				while (option != 1 && option != 2 && option != 3) {
 					System.out.print("\nWrong option. Choose again: ");
-					option = sc.nextInt();
+					option = UI.getInt();
 				}
 
 				if (option == 1) { // Novo cliente secundario
 					otherClient = clientService.newClient();
-					
+
 					System.out.println("\nDo you want Debit Card? ");
-					option = choose();
+					option = UI.choose();
 					if (option == 1) {
-						DebitCard debitCard1 = new DebitCard();
-						debitCard1 = debitCardService.newDebitCard(account, otherClient);
-						System.out.println(debitCard1);
-					} 
-					System.out.println(otherClient);
+						debitCardService.newDebitCard(account, otherClient);
+					}
+
+					if (verifyAccountCreditCards(account)) {
+						System.out.println("\nDo you want Credit Card?");
+						option = UI.choose();
+						if (option == 1) {
+							creditCardService.newCreditCard(account, otherClient);;
+						}
+					}
+
 					account.addOtherTitular(otherClient);
 					otherClient.addAccount(account);
+					clientService.addListClients(otherClient);
 
 				} else if (option == 2) { // cliente existente
-					System.out.println("Enter the nif:");
-					String nif = sc.next();
-					if (admService.showClient(nif) != null) {
-						//TODO: falta metodo para verificar se o cliente e da mesma conta se for nao pode
-						System.out.println("Do you want Debit Card?");
-						option = choose();
+					System.out.print("Enter the nif: ");
+					String nif = UI.scanLine();
+					if (admService.showClient(nif) != null && admService.showClient(nif) != account.getMainTitular()) {
+
+						System.out.println("\nDo you want Debit Card?");
+						option = UI.choose();
 						if (option == 1) {
-							if (debitCardService.verifyDebitCard(admService.showClient(nif)) == false) {
-								DebitCard debitCard2 = new DebitCard();
-								debitCard2 = debitCardService.newDebitCard(account, admService.showClient(nif));
-								System.out.println(debitCard2.toStringClient());
-							} 	
+							debitCardService.newDebitCard(account, admService.showClient(nif));
 						}
-						System.out.println(admService.showClient(nif));
+
+						if (verifyAccountCreditCards(account)) {
+							System.out.println("\nDo you want Credit Card?");
+							option = UI.choose();
+							if (option == 1) {
+								creditCardService.newCreditCard(account, admService.showClient(nif));
+							}
+						}
 						account.addOtherTitular(admService.showClient(nif));
 						admService.showClient(nif).addAccount(account);
 					}
@@ -151,54 +135,37 @@ public class AccountService {
 					System.out.println("Pass");
 				}
 			}
-			
-			System.out.println("\nDo you want Credit Card?");
-			option = choose();
-			if (option == 1) {
-				System.out.println("\nClient Nif: ");
-				String nif = sc.next();
-				if(admService.showClient(nif)!= null) {
-					if (creditCardService.verifyCreditCard(admService.showClient(nif)) == false) {
-						CreditCard creditCard = new CreditCard();
-						creditCard = creditCardService.newCreditCard(account, client);
-						System.out.println(creditCard.toStringClient());
-					}
-				}
-			}
 		}
-		addListAccounts(account);
-		System.out.println(account);	
-		return account;
 	}
 
 	public void editAccount(Account account) {
 		MenuADM menuADM = new MenuADM();
-		ADMservice admService = new ADMservice();
-		
-		System.out.println("\nChoose your Action:"
-				+ "\n1 - Add Other Titular"
+		System.out.println("\nChoose your Action:" 
+				+ "\n1 - Add Other Titular" 
 				+ "\n2 - Remove Other Titular"
-				+ "\n3 - Remove Account"
-				+ "\n4 - Transfer"
-				+ "\n5 - Deposit"
-				+ "\n6 - Draw"
+				+ "\n3 - Remove Account" 
+				+ "\n4 - Transfer" 
+				+ "\n5 - Deposit" 
+				+ "\n6 - Draw" 
 				+ "\n7 - Back");
-		
-		Integer option = sc.nextInt();
-		switch(option) {
+
+		int option = UI.getInt();
+		switch (option) {
 		case 1:
-			if(account.getOtherTitulars() == null || account.getOtherTitulars().size() <= 4) {
-				addOtherTitular(account);	
+			if (account.getOtherTitulars() == null || account.getOtherTitulars().size() < 4) {
+				addOtherTitular(account);
 			} else {
-				System.out.println("This account already has four Other Titulars");
+				System.out.println("\nThis account already has four Other Titulars");
 			}
 			break;
 		case 2:
-			System.out.println("\nEnter the nif:");
-			String nif = sc.next(); //TODO: da erro ver
-			if(admService.showClient(nif) != null) {
-				//TODO:metodo para verificar se o cliente e da mesma conta se for nao pode
-				removeOtherHolder(account, admService.showClient(nif));	
+			System.out.print("\nEnter the nif: ");
+			String nif = UI.scanLine(); // tinha scan
+			if (admService.showClient(nif) != null && admService.showClient(nif).getAccounts().contains(account)) {
+				System.out.println("2");
+				removeOtherHolder(account, admService.showClient(nif));
+			} else {
+				System.out.println("\nThis nif doesn't belong to this account");
 			}
 			break;
 		case 3:
@@ -206,30 +173,30 @@ public class AccountService {
 			break;
 		case 4:
 			System.out.println("\nEnter the account number: ");
-			Long accountNumber = sc.nextLong();
-			if(admService.showAccount(accountNumber) != null) {
-				if(account.getAccountNumber() == accountNumber) {
-					System.out.println("Can't transfer money to the same account");
+			int accountNumber = UI.getInt();
+			if (admService.showAccount(accountNumber) != null) {
+				if (account.getAccountNumber() == accountNumber) {
+					System.out.println("\nCan't transfer money to the same account");
 					editAccount(account);
 				} else {
 					System.out.print("\nEnter the amount to transfer: ");
-					double value = sc.nextDouble();
+					double value = UI.getDouble();
 					transfer(account, admService.showAccount(accountNumber), value);
 				}
 			}
 			break;
 		case 5:
 			System.out.print("\nEnter the Deposit value: ");
-			Double value = sc.nextDouble();
+			double value = UI.getDouble();
 			deposit(account, value);
 			break;
 		case 6:
 			System.out.print("\nEnter the Draw value: ");
-			value = sc.nextDouble();
+			value = UI.getDouble();
 			draw(account, value);
 			break;
 		case 7:
-			menuADM.displayMenu();
+			MenuADM.displayMenu();
 			menuADM.selection();
 			break;
 		default:
@@ -237,161 +204,159 @@ public class AccountService {
 			editAccount(account);
 			break;
 		}
-		menuADM.displayMenu();
+		MenuADM.displayMenu();
 		menuADM.selection();
 	}
-	
-	//----------------------------------------------------------------------
-	
+
+	// ----------------------------------------------------------------------
+
 	private void addOtherTitular(Account account) {
-		//TODO: adicionar outro titular à conta
-		ClientService clientService = new ClientService();
-		DebitCardService debitCardService = new DebitCardService();
-		ADMservice admService = new ADMservice();
-		
-			System.out.println("\n1 - New client" + "\n2 - Existing client");
-			Integer option = sc.nextInt();
-			while (option != 1 && option != 2) {
-				System.out.print("\nWrong option. Choose again: ");
-				option = sc.nextInt();
+//		TODO: adicionar outro titular à conta
+
+		System.out.println("\n1 - New client" + "\n2 - Existing client");
+		int option = UI.getInt();
+		while (option != 1 && option != 2) {
+			System.out.print("\nWrong option. Choose again: ");
+			option = UI.getInt();
+		}
+		if (option == 1) {
+			Client client = clientService.newClient();
+			client.addAccount(account);
+			account.addOtherTitular(client);
+
+			System.out.println("\nDo you want Debit Card?");
+			option = UI.choose();
+			if (option == 1) {
+				debitCardService.newDebitCard(account, client);
 			}
-			if(option == 1) {
-				Client client = clientService.newClient();
-				client.addAccount(account);
-				account.addOtherTitular(client);
-				System.out.println("\nDo you want Debit Card?");
-				option = choose();
+			
+			if (verifyAccountCreditCards(account)) {
+				System.out.println("\nDo you want Credit Card?");
+				option = UI.choose();
 				if (option == 1) {
-					DebitCard debitCard = debitCardService.newDebitCard(account, client);
-					System.out.println(debitCard.toStringClient());
-				}	
-			} else {
-				System.out.println("\nEnter the nif:");
-				String nif = sc.next();
-				if (admService.showClient(nif) != null) {
-					//falta metodo para verificar se o cliente e da mesma conta se for nao pode
-					account.addOtherTitular(admService.showClient(nif));
-					admService.showClient(nif).addAccount(account);
-					System.out.println(admService.showClient(nif));
-					System.out.println("\nDo you want Debit Card?");
-					option = choose();
+					creditCardService.newCreditCard(account, client);
+				}
+			}
+	
+		} else {
+			System.out.print("\nEnter the nif: ");
+			String nif = UI.scanLine();
+			if (admService.showClient(nif) != null && !account.getOtherTitulars().contains(admService.showClient(nif))
+					&& account.getMainTitular() != admService.showClient(nif)) {
+
+				account.addOtherTitular(admService.showClient(nif));
+				admService.showClient(nif).addAccount(account);
+				System.out.println(admService.showClient(nif));
+
+				System.out.println("\nDo you want Debit Card?");
+				option = UI.choose();
+				if (option == 1) {
+					debitCardService.newDebitCard(account, admService.showClient(nif));
+				}
+				
+				if (verifyAccountCreditCards(account)) {
+					System.out.println("\nDo you want Credit Card?");
+					option = UI.choose();
 					if (option == 1) {
-						if (debitCardService.verifyDebitCard(admService.showClient(nif)) == false) {
-							DebitCard debitCard = debitCardService.newDebitCard(account, admService.showClient(nif));
-							System.out.println(debitCard.toStringClient());
-						} 	
+						creditCardService.newCreditCard(account, admService.showClient(nif));
 					}
 				}
-			}	
+			}
+		}
 	}
-	
+
 	private void removeOtherHolder(Account account, Client client) {
-		//TODO: remover outro titular da conta
-		ClientService clientService = new ClientService();
-		CreditCardService creditCardService = new CreditCardService();
-		DebitCardService debitCardService = new DebitCardService();
-		
-		
-		if(client.getDebitCard().getAccount() == account) {
+//		 TODO: remover outro titular da conta
+		if (account.getDebitCards().contains(client.getDebitCard())) {
 			debitCardService.removeListDebitCards(client.getDebitCard());
 			client.setDebitCard(null);
 		}
-		if(client.getCreditCard().getAccount() == account) {
+		if (account.getCreditCards().contains(client.getCreditCard())) {
 			creditCardService.removeListCreditCards(client.getCreditCard());
-			client.setCreditCard(null);	
+			client.setCreditCard(null);
 		}
 		account.removeOtherTitular(client);
 		client.removeAccount(account);
-	
-		if(client.getAccounts() == null) {
+
+		if (client.getAccounts().isEmpty()) {
 			clientService.removeListClients(client);
-			
 		}
-		
 	}
-	
+
 	private void draw(Account account, Double value) {
-		//TODO: levantar guita
-		if(account.getBalance() > value) {
+		// TODO: levantar guita
+		if (account.getBalance() > value) {
 			account.setBalance(account.getBalance() - value);
 			System.out.println(account);
 		} else {
 			System.out.println("Don't have that amount in account");
 		}
 	}
-	
+
 	private void transfer(Account accountFrom, Account accountFor, Double value) {
-		//TODO: tranferir guita entre contas
-		if(accountFrom.getBalance() > value) {
+		// TODO: tranferir guita entre contas
+		if (accountFrom.getBalance() > value) {
 			accountFrom.setBalance(accountFrom.getBalance() - value);
 			accountFor.setBalance(accountFor.getBalance() + value);
 			System.out.println(accountFrom);
 		} else {
 			System.out.println("Don't have that amount in account");
 		}
-		
+
 	}
-	
+
 	private void deposit(Account account, Double value) {
-		//TODO: depositar guita
+		// TODO: depositar guita
 		account.setBalance(account.getBalance() + value);
 		System.out.println(account);
 	}
-	
+
 	private void removeAccount(Account account) {
-		//TODO: remover conta
-		ClientService clientService = new ClientService();
-		DebitCardService debitCardService = new DebitCardService();
-		CreditCardService creditCardService = new CreditCardService();
-		
-		account.getMainTitular().removeAccount(account);
-		
-		if(account.getMainTitular().getDebitCard() != null) {
-			if(account.getDebitCards().contains(account.getMainTitular().getDebitCard())) {
-				debitCardService.removeListDebitCards(account.getMainTitular().getDebitCard());
-				account.getMainTitular().setDebitCard(null);
+//		TODO: remover conta
+		Client titular = account.getMainTitular();
+
+		if (titular.getDebitCard() != null) {
+			if (account.getDebitCards().contains(titular.getDebitCard())) {
+				debitCardService.removeListDebitCards(titular.getDebitCard());
+				titular.setDebitCard(null);
 			}
 		}
-		
-		if(account.getMainTitular().getCreditCard() != null) {
-			if(account.getCreditCards().contains(account.getMainTitular().getCreditCard())) {
-				creditCardService.removeListCreditCards(account.getMainTitular().getCreditCard());
-				account.getMainTitular().setCreditCard(null);
+		if (titular.getCreditCard() != null) {
+			if (account.getCreditCards().contains(titular.getCreditCard())) {
+				creditCardService.removeListCreditCards(titular.getCreditCard());
+				titular.setCreditCard(null);
 			}
 		}
-		
-		if(account.getMainTitular().getAccounts() == null) {
-			clientService.removeListClients(account.getMainTitular());
+		titular.removeAccount(account);
+		if (titular.getAccounts().isEmpty()) {
+			clientService.removeListClients(titular);
 		}
-		
-		
-		if(account.getOtherTitulars() != null) {
-			for(Client client : account.getOtherTitulars()) {
-				client.removeAccount(account);
-				if(client.getDebitCard() != null) {
-					if(account.getDebitCards().contains(client.getDebitCard())) {
+
+		if (account.getOtherTitulars() != null) {
+			for (Client client : account.getOtherTitulars()) {
+				if (client.getDebitCard() != null) {
+					if (account.getDebitCards().contains(client.getDebitCard())) {
 						debitCardService.removeListDebitCards(client.getDebitCard());
 						client.setDebitCard(null);
 					}
 				}
-				
-				if(client.getCreditCard() != null) {
-					if(account.getCreditCards().contains(client.getCreditCard())) {
+				if (client.getCreditCard() != null) {
+					if (account.getCreditCards().contains(client.getCreditCard())) {
 						creditCardService.removeListCreditCards(client.getCreditCard());
 						client.setCreditCard(null);
 					}
 				}
-				
-				if(client.getAccounts() == null) {
+				client.removeAccount(account);
+				if (client.getAccounts().isEmpty()) {
 					clientService.removeListClients(client);
 				}
-				
 			}
-		} 
-		removeListAccounts(account);		
+		}
+
+		removeListAccounts(account);
 	}
 
-	//---------------------------------------------------
+	// ---------------------------------------------------
 
 	public void addListAccounts(Account account) {
 		ADM.accounts.add(account);

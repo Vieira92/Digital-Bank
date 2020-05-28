@@ -1,14 +1,14 @@
 package com.rumos.bank.administration.models;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Client {
 
-	private Long clientNumber;
+	private int clientNumber;
 	private String name;
-	private Date birth;
+	private LocalDate birth;
 	private String nif;
 	private String email;
 	private String cellphone;
@@ -21,26 +21,66 @@ public class Client {
 	
 	//---------------------------------------------------------------
 	
+	
+	
 	@Override
 	public String toString() {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		String birthFormated = sdf.format(birth);
-		return 	 "\nNumber: " + clientNumber 
-				+ "\nName: " + name 
+		DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String birthFormated = dtFormatter.format(birth);
+		StringBuilder sb = new StringBuilder();
+		sb.append("\nName: " + name 
+				+ "\nNumber: " + clientNumber
 				+ "\nBirth: " + birthFormated 
 				+ "\nNif: " + nif
 				+ "\nEmail: " + email 
 				+ "\nCellphone: " + cellphone 
 				+ "\nTelephone: " + telephone 
-				+ "\nOccupation: " + occupation;
+				+ "\nOccupation: " + occupation);
+		sb.append("\n");
+		if(debitCard != null) {
+			sb.append("\nDebit card Nº:  " + debitCard.getDebitCardNumber() 
+					+ "   account: " + debitCard.getAccount().getAccountNumber());
+		}
+		
+		if(creditCard != null) {
+			sb.append("\nCredit card Nº: " + creditCard.getCreditCardNumber() 
+					+ "   account: " + creditCard.getAccount().getAccountNumber());
+		}
+		
+		if(accounts.size() < 2) {
+			sb.append("\nAccount:");
+		}
+		else {
+			sb.append("\nAccounts:");
+		}
+		for(Account account : accounts) {
+			sb.append("\nNº: " + account.getAccountNumber());
+			sb.append("   Main titular: " + account.getMainTitular().name);
+			sb.append("	Balance: " + String.format("%.2f", account.getBalance()));
+		}
+
+		String client = sb.toString();
+		return client;
 	}
 	
+	public Client(int clientNumber, String name, LocalDate birth, String nif, String email, String cellphone,
+			String telephone, String occupation) {
+		this.clientNumber = clientNumber;
+		this.name = name;
+		this.birth = birth;
+		this.nif = nif;
+		this.email = email;
+		this.cellphone = cellphone;
+		this.telephone = telephone;
+		this.occupation = occupation;
+	}
+
 	//---------------------------------------------------------------
 	
-	public Long getClientNumber() {
+	public int getClientNumber() {
 		return clientNumber;
 	}
-	public void setClientNumber(Long clientNumber) {
+	public void setClientNumber(int clientNumber) {
 		this.clientNumber = clientNumber;
 	}
 	public String getName() {
@@ -50,12 +90,8 @@ public class Client {
 		this.name = name;
 	}
 
-	public Date getBirth() {
+	public LocalDate getBirth() {
 		return birth;
-	}
-
-	public void setBirth(Date birth) {
-		this.birth = birth;
 	}
 
 	public String getNif() {

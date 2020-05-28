@@ -9,13 +9,13 @@ import com.rumos.bank.administration.models.DebitCard;
 public class ADMservice {
 	// ----------------------SHOW-------------------------------
 
-	public Account showAccount(Long accountNumber) {
+	public Account showAccount(int accountNumber) {
 		for (Account account : ADM.accounts) {
-			if (account.getAccountNumber().equals(accountNumber)) {
+			if (account.getAccountNumber() == accountNumber) {
 				return account;
 			}
 		}
-		System.out.println("Invalid Account number");
+		System.out.println("\nInvalid Account number");
 		return null;
 	}
 
@@ -25,7 +25,7 @@ public class ADMservice {
 				return client;
 			}
 		}
-		System.out.println("Invalid NIF");
+		System.out.println("\nInvalid NIF");
 		return null;
 	}
 
@@ -39,31 +39,31 @@ public class ADMservice {
 //	return Optional.empty();
 //	}
 
-	public CreditCard showCreditCard(Long creditCarNumber) {
+	public CreditCard showCreditCard(int creditCarNumber) {
 		for(CreditCard creditCard : ADM.creditCards) {
-			if(creditCard.getCreditCardNumber().equals(creditCarNumber)) {
+			if(creditCard.getCreditCardNumber() == creditCarNumber) {
 				return creditCard;
 			}
 		}
-		System.out.println("Invalid Credit Card number");
+		System.out.println("\nInvalid Credit Card number");
 		return null;
 	}
 
-	public DebitCard showDebitCard(Long debitCardNumber) {
+	public DebitCard showDebitCard(int debitCardNumber) {
 		for (DebitCard debitCard : ADM.debitCards) {
-			if(debitCard.getDebitCardNumber().equals(debitCardNumber)) {
+			if(debitCard.getDebitCardNumber() == debitCardNumber) {
 				return debitCard;
 			}
 		}
-		System.out.println("Invalid Debit Card number");
+		System.out.println("\nInvalid Debit Card number");
 		return null;
 	}
 
 	// -------------------------LIST------------------------------
 
 	public void listAccounts() {
-		if (ADM.accounts == null) {
-			System.out.println("This bank has no accounts");
+		if (ADM.accounts.isEmpty()) {
+			System.out.println("\nThis bank has no accounts");
 		} else {
 			System.out.println("\nAll Accounts");
 			for (Account account : ADM.accounts) {
@@ -74,8 +74,8 @@ public class ADMservice {
 	}
 
 	public void listClients() {
-		if (ADM.clients == null) {
-			System.out.println("This bank has no clients and accounts");
+		if (ADM.clients.isEmpty()) {
+			System.out.println("\nThis bank has no clients and accounts");
 		} else {
 			System.out.println("\nAll Clients:");
 			for (Client client : ADM.clients) {
@@ -86,8 +86,8 @@ public class ADMservice {
 	}
 
 	public void listCreditCards() {
-		if (ADM.creditCards == null) {
-			System.out.println("This bank has no Credit Cards");
+		if (ADM.creditCards.isEmpty()) {
+			System.out.println("\nThis bank has no Credit Cards");
 		} else {
 			System.out.println("\nAll Credit Cards:");
 			for (CreditCard creditCard : ADM.creditCards) {
@@ -98,8 +98,8 @@ public class ADMservice {
 	}
 
 	public void listDebitCards() {
-		if (ADM.debitCards == null) {
-			System.out.println("This bank has no Debit Cards");
+		if (ADM.debitCards.isEmpty()) {
+			System.out.println("\nThis bank has no Debit Cards");
 		} else {
 			System.out.println("\nAll Debit Cards:");
 			for (DebitCard debitCard : ADM.debitCards) {

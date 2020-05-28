@@ -1,43 +1,44 @@
 package com.rumos.bank;
 
 import java.util.Locale;
-import java.util.Scanner;
 
 import com.rumos.bank.administration.MenuADM;
+import com.rumos.bank.administration.services.UI;
 
 public class Menu {
 
-	public void displayMenu() {
-		System.out.println("Welcom,\nChoose a category:"
+	public static void displayMenu() {
+		System.out.println("Choose a category:"
 				+ "\n1 - ADM"
 				+ "\n2 - ATM"
 				+ "\n3 - Exit");
+		selection();
 	}
 	
-	public void selection() {
+	private static void selection() {
 		Locale.setDefault(Locale.US);
-		Scanner sc = new Scanner(System.in);
-		String choose = sc.nextLine();
-		switch(choose) {
-		case "1":
+		int option = UI.getInt();
+		
+		switch(option) {
+		case 1:
 			MenuADM ADMmenu = new MenuADM();
-			ADMmenu.displayMenu();
+			MenuADM.displayMenu();
 			ADMmenu.selection();
 			break;
-		case "2":
+		case 2:
 			// TODO: ATM
 			System.out.println("2 ATM");
 			System.out.println("NAO ESTA FEITO AINDA!!");
 			break;
-		case "3":
-			// TODO: Sair da app
-			System.out.println("Exit");
+		case 3:
+			System.out.println("Thanks for using Rumos Digital Bank");
+			UI.scClose();
+			System.exit(0);
 			break;
 		default:
-			System.out.print("Wrong, please do it again:");
+			System.out.print("Wrong, please do it again: ");
 			selection();
 			break;
 		}
-		sc.close();
 	}
 }

@@ -2,7 +2,7 @@ package com.rumos.bank.administration.models;
 
 public class DebitCard {
 
-	private Long debitCardNumber;
+	private int debitCardNumber;
 	private Account account;
 	private Client titular;
 	// valor já levantado hoje (dia)
@@ -14,7 +14,7 @@ public class DebitCard {
 	@Override
 	public String toString() {
 		return "\nDebitCard:" 
-				+  "\nNumber: " + debitCardNumber 
+				+ "\nNumber: " + debitCardNumber 
 				+ "\nAccount number: " + account.getAccountNumber() 
 				+ "\nTitular: " + titular.getName()
 				+ "\nTitular number: " + titular.getClientNumber();
@@ -32,11 +32,11 @@ public class DebitCard {
 	
 	//--------------------------------------------------------
 	
-	public Long getDebitCardNumber() {
+	public int getDebitCardNumber() {
 		return debitCardNumber;
 	}
 	
-	public void setDebitCardNumber(Long debitCardNumber) {
+	public void setDebitCardNumber(int debitCardNumber) {
 		this.debitCardNumber = debitCardNumber;
 	}
 	public Account getAccount() {

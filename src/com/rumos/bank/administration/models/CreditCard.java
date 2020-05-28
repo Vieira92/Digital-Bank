@@ -2,14 +2,14 @@ package com.rumos.bank.administration.models;
 
 public class CreditCard {
 
-	private Long creditCardNumber;
+	private int creditCardNumber;
 	private Account account;
 	private Client titular;
 	
 	@Override
 	public String toString() {
 		return "\nCreditCard:" 
-				+  "\nNumber: " + creditCardNumber 
+				+ "\nNumber: " + creditCardNumber 
 				+ "\nAccount number: " + account.getAccountNumber() 
 				+ "\nTitular: " + titular.getName()
 				+ "\nTitular number: " + titular.getClientNumber();
@@ -28,10 +28,10 @@ public class CreditCard {
 	//-------------------------------------------------------
 	
 
-	public Long getCreditCardNumber() {
+	public int getCreditCardNumber() {
 		return creditCardNumber;
 	}
-	public void setCreditCardNumber(Long creditCardNumber) {
+	public void setCreditCardNumber(int creditCardNumber) {
 		this.creditCardNumber = creditCardNumber;
 	}
 	public Account getAccount() {

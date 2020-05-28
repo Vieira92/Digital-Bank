@@ -7,20 +7,22 @@ import com.rumos.bank.administration.models.DebitCard;
 
 public class DebitCardService {
 
-	public DebitCard newDebitCard(Account account, Client titular) {
-		DebitCard debitCard = new DebitCard();
-		debitCard.setDebitCardNumber(ADM.debitCardNumber());
-		debitCard.setAccount(account);
-		debitCard.setTitular(titular);
-		titular.setDebitCard(debitCard);
-		account.addDebitCard(debitCard);
-		addListDebitCards(debitCard);
-		return debitCard;
+	public void newDebitCard(Account account, Client titular) {
+		if(verifyDebitCard(titular) == false) {
+			DebitCard debitCard = new DebitCard();
+			debitCard.setDebitCardNumber(ADM.debitCardNumber());
+			debitCard.setAccount(account);
+			debitCard.setTitular(titular);
+			titular.setDebitCard(debitCard);
+			account.addDebitCard(debitCard);
+			addListDebitCards(debitCard);
+			System.out.println(debitCard);
+		}
 	}
 	
 	public Boolean verifyDebitCard(Client client) {
 		if (client.getDebitCard() != null) {
-			System.out.println("Client can't have two Debit Cards");
+			System.out.println("\nClient can't have two Debit Cards");
 			return true;
 		} else
 			return false;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Account {
 
-	private Long accountNumber;
+	private int accountNumber;
 	private Client mainTitular;
 	private Double balance;
 	private ArrayList<Client> otherTitulars = new ArrayList<>();
@@ -14,18 +14,44 @@ public class Account {
 	
 	@Override
 	public String toString() {
-		return "\nAccount number: " + accountNumber 
-				+ "\nMain titular: " + mainTitular.getName() + ", number: " + mainTitular.getClientNumber()
-				+ "\nOther titulars: " + !otherTitulars.isEmpty()
-				+ "\nBalance: " + balance;
+//		DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+//		String birthFormated = dtFormatter.format(date);
+		StringBuilder sb = new StringBuilder();
+		sb.append("\nAccount Nº: " + accountNumber 
+				+ "\nMain titular: " + mainTitular.getName() + "  Nº: " + mainTitular.getClientNumber());
+		
+		if(!otherTitulars.isEmpty()) {
+			for(Client client : otherTitulars) {
+				sb.append("\nOther titular: " + client.getName() + " Nº: " + client.getClientNumber());
+			}
+		}
+		
+		sb.append("\nBalance: " + String.format("%.2f", balance));
+		
+		if(!debitCards.isEmpty()) {
+			sb.append("\n");
+			for(DebitCard debitCard : debitCards) {
+				sb.append("\nDebit card: " + debitCard.getTitular().getName() + " Nº: " + debitCard.getDebitCardNumber());
+			}
+		}
+		
+		if(!creditCards.isEmpty()) {
+			sb.append("\n");
+			for(CreditCard creditCard : creditCards) {
+				sb.append("\nCredit card: " + creditCard.getCreditCardNumber() + " owner Nº: " + creditCard.getTitular().getClientNumber());
+			}
+		}
+
+		String account = sb.toString();
+		return account;
 	}
 
 	//------------------------------------------------------
 	
-	public Long getAccountNumber() {
+	public int getAccountNumber() {
 		return accountNumber;
 	}
-	public void setAccountNumber(Long accountNumber) {
+	public void setAccountNumber(int accountNumber) {
 		this.accountNumber = accountNumber;
 	}
 	public Client getMainTitular() {
@@ -84,4 +110,6 @@ public class Account {
 	}
 
 	//----------------------------------------------------	
+	
+	
 }
