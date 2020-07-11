@@ -1,12 +1,15 @@
-package com.rumos.bank;
+package com.rumos.bank.userInterface;
 
 import java.util.Locale;
 
-import com.rumos.bank.administration.MenuADM;
-import com.rumos.bank.administration.services.UI;
+import com.rumos.bank.userInterface.MenuADM;
+import com.rumos.bank.userInterface.UI;
 
-public class Menu {
+public class Console {
 
+	{System.out.println("====    Welcome to Rumos Digital Bank    ====\n");}
+	{displayMenu();}
+	
 	public static void displayMenu() {
 		System.out.println("Choose a category:"
 				+ "\n1 - ADM"
@@ -22,7 +25,7 @@ public class Menu {
 		switch(option) {
 		case 1:
 			MenuADM ADMmenu = new MenuADM();
-			MenuADM.displayMenu();
+			MenuADM.displayMenuADM();
 			ADMmenu.selection();
 			break;
 		case 2:

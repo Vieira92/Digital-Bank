@@ -6,27 +6,37 @@ import com.rumos.bank.administration.models.Client;
 import com.rumos.bank.administration.models.CreditCard;
 
 public class CreditCardService {
-
-	public void newCreditCard(Account account, Client titular) {
+	
+	public CreditCard newCreditCard(Account account, Client titular) {
 		if(verifyCreditCard(titular) == false) {
-			CreditCard creditCard = new CreditCard();
-			creditCard.setCreditCardNumber(ADM.creditCardNumber());
-			creditCard.setAccount(account);
-			creditCard.setTitular(titular);
-			titular.setCreditCard(creditCard);
-			account.addCreditCard(creditCard);
-			addListCreditCards(creditCard);
-			System.out.println(creditCard);
+			if(verifyAccountCreditCards(account) == true) {
+				int creditCardNumber = ADM.creditCardNumber();
+				
+				CreditCard creditCard = new CreditCard(creditCardNumber, account, titular);
+				
+				titular.setCreditCard(creditCard);
+				account.addCreditCard(creditCard);
+				addListCreditCards(creditCard);
+				return creditCard;
+			}
 		}
+		return null;
 	}
 	
-	
-	private Boolean verifyCreditCard(Client client) {
+	public Boolean verifyCreditCard(Client client) {
 		if (client.getCreditCard() != null) {
-			System.out.println("\nClient can't have two Credit Cards");
 			return true;
 		} else
 			return false;
+	}
+	
+	public Boolean verifyAccountCreditCards(Account account) {
+		if (account.getCreditCards().isEmpty() || account.getCreditCards().size() < 2) {
+			return true;
+		} else {
+
+			return false;
+		}
 	}
 	
 	public void addListCreditCards(CreditCard creditCard) {

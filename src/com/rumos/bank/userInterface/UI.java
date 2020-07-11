@@ -1,4 +1,4 @@
-package com.rumos.bank.administration.services;
+package com.rumos.bank.userInterface;
 
 import java.util.Scanner;
 
@@ -19,12 +19,7 @@ public class UI {
 		}
 		return choose;
 	}
-	
-	public static String scanLine() {
-		sc.skip("(\r\n|[\n\r\u2028\u2029\u0085])?");
-		return sc.nextLine();
-	}
-	
+
 	public static int getInt() {
 		int number = 0;
 		boolean inputNotNull = true;
@@ -45,7 +40,7 @@ public class UI {
 		}
 		return number;
 	}
-	
+		
 	public static double getDouble() {
 		double number = 0.0;
 		boolean inputNotNull = true;
@@ -65,5 +60,10 @@ public class UI {
 		    return number;
 		}
 		return number;
+	}
+
+	public static String scanLine() {
+		sc.skip("(\r\n|[\n\r\u2028\u2029\u0085])?");
+		return sc.nextLine();
 	}
 }

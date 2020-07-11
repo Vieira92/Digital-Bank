@@ -9,7 +9,11 @@ public class DebitCard {
 	// atribuiçao de pin e alteraçao
 	//private Integer pin;
 	
-	
+	public DebitCard(int debitCardNumber, Account account, Client titular) {
+		this.debitCardNumber = debitCardNumber;
+		this.account = account;
+		this.titular = titular;
+	}
 	
 	@Override
 	public String toString() {
@@ -28,7 +32,6 @@ public class DebitCard {
 				+ "\n	Titular: " + titular.getName()
 				+ "\n	Titular number: " + titular.getClientNumber();
 	}
-	
 	
 	//--------------------------------------------------------
 	
@@ -51,7 +54,4 @@ public class DebitCard {
 	public void setTitular(Client titular) {
 		this.titular = titular;
 	}
-	
-	
-	
 }

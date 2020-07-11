@@ -7,15 +7,13 @@ import com.rumos.bank.administration.models.CreditCard;
 import com.rumos.bank.administration.models.DebitCard;
 
 public class ADMservice {
-	// ----------------------SHOW-------------------------------
-
+	
 	public Account showAccount(int accountNumber) {
 		for (Account account : ADM.accounts) {
 			if (account.getAccountNumber() == accountNumber) {
 				return account;
 			}
 		}
-		System.out.println("\nInvalid Account number");
 		return null;
 	}
 
@@ -25,19 +23,8 @@ public class ADMservice {
 				return client;
 			}
 		}
-		System.out.println("\nInvalid NIF");
 		return null;
 	}
-
-//	public Optional<Client> showClient(String nif) {	
-//	for(Client client : ADM.clients) {
-//		if(client.getNif().contains(nif)) {
-//			System.out.println(client);
-//			return Optional.of(client);
-//		} 
-//	}
-//	return Optional.empty();
-//	}
 
 	public CreditCard showCreditCard(int creditCarNumber) {
 		for(CreditCard creditCard : ADM.creditCards) {
@@ -45,7 +32,6 @@ public class ADMservice {
 				return creditCard;
 			}
 		}
-		System.out.println("\nInvalid Credit Card number");
 		return null;
 	}
 
@@ -55,7 +41,6 @@ public class ADMservice {
 				return debitCard;
 			}
 		}
-		System.out.println("\nInvalid Debit Card number");
 		return null;
 	}
 
@@ -108,5 +93,4 @@ public class ADMservice {
 			}
 		}
 	}
-
 }

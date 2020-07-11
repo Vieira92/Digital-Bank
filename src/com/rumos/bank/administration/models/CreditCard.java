@@ -6,6 +6,13 @@ public class CreditCard {
 	private Account account;
 	private Client titular;
 	
+	
+	public CreditCard(int creditCardNumber, Account account, Client titular) {
+		this.creditCardNumber = creditCardNumber;
+		this.account = account;
+		this.titular = titular;
+	}
+
 	@Override
 	public String toString() {
 		return "\nCreditCard:" 
@@ -24,10 +31,8 @@ public class CreditCard {
 				+ "\n	Titular number: " + titular.getClientNumber();
 	}
 	
-	
 	//-------------------------------------------------------
 	
-
 	public int getCreditCardNumber() {
 		return creditCardNumber;
 	}
@@ -46,8 +51,4 @@ public class CreditCard {
 	public void setTitular(Client titular) {
 		this.titular = titular;
 	}
-	
-	
 }
-
-

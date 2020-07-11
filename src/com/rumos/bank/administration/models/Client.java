@@ -19,9 +19,18 @@ public class Client {
 	private DebitCard debitCard;
 	private ArrayList<Account> accounts = new ArrayList<>();
 	
-	//---------------------------------------------------------------
 	
-	
+	public Client(int clientNumber, String name, LocalDate birth, String nif, String email, String cellphone,
+			String telephone, String occupation) {
+		this.clientNumber = clientNumber;
+		this.name = name;
+		this.birth = birth;
+		this.nif = nif;
+		this.email = email;
+		this.cellphone = cellphone;
+		this.telephone = telephone;
+		this.occupation = occupation;
+	}
 	
 	@Override
 	public String toString() {
@@ -61,18 +70,6 @@ public class Client {
 
 		String client = sb.toString();
 		return client;
-	}
-	
-	public Client(int clientNumber, String name, LocalDate birth, String nif, String email, String cellphone,
-			String telephone, String occupation) {
-		this.clientNumber = clientNumber;
-		this.name = name;
-		this.birth = birth;
-		this.nif = nif;
-		this.email = email;
-		this.cellphone = cellphone;
-		this.telephone = telephone;
-		this.occupation = occupation;
 	}
 
 	//---------------------------------------------------------------
@@ -165,9 +162,4 @@ public class Client {
 	public void removeAccount(Account account) {
 		accounts.remove(account);
 	}
-	
-	
-	
-	
-	
 }

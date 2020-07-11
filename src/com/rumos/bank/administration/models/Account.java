@@ -6,11 +6,21 @@ public class Account {
 
 	private int accountNumber;
 	private Client mainTitular;
-	private Double balance;
+	private double balance;
 	private ArrayList<Client> otherTitulars = new ArrayList<>();
 	private ArrayList<DebitCard> debitCards = new ArrayList<>();
 	private ArrayList<CreditCard> creditCards = new ArrayList<>();
 
+	
+	public Account() {
+	}
+	
+	public Account(int accountNumber, Client mainTitular, double balance, ArrayList<Client> otherTitulars) {
+		this.accountNumber = accountNumber;
+		this.mainTitular = mainTitular;
+		this.balance = balance;
+		this.otherTitulars = otherTitulars;
+	}
 	
 	@Override
 	public String toString() {
@@ -31,14 +41,14 @@ public class Account {
 		if(!debitCards.isEmpty()) {
 			sb.append("\n");
 			for(DebitCard debitCard : debitCards) {
-				sb.append("\nDebit card: " + debitCard.getTitular().getName() + " Nº: " + debitCard.getDebitCardNumber());
+				sb.append("\nDebit card: " + debitCard.getDebitCardNumber() + " Titular Nº: " + debitCard.getTitular().getClientNumber());
 			}
 		}
 		
 		if(!creditCards.isEmpty()) {
 			sb.append("\n");
 			for(CreditCard creditCard : creditCards) {
-				sb.append("\nCredit card: " + creditCard.getCreditCardNumber() + " owner Nº: " + creditCard.getTitular().getClientNumber());
+				sb.append("\nCredit card: " + creditCard.getCreditCardNumber() + " Titular Nº: " + creditCard.getTitular().getClientNumber());
 			}
 		}
 
@@ -108,8 +118,4 @@ public class Account {
 	public ArrayList<CreditCard> getCreditCards() {
 		return creditCards;
 	}
-
-	//----------------------------------------------------	
-	
-	
 }
