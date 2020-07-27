@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import com.rumos.bank.administration.models.Account;
 import com.rumos.bank.administration.models.Client;
+import com.rumos.bank.administration.models.CreditCard;
+import com.rumos.bank.administration.models.DebitCard;
 import com.rumos.bank.administration.services.AccountService;
 import com.rumos.bank.administration.services.ClientService;
 import com.rumos.bank.administration.services.CreditCardService;
@@ -19,15 +21,16 @@ public class NewInput {
 	private AccountService accountService;
 	private CreditCardService creditCardService;
 	private DebitCardService debitCardService;
-
-	private MenuADM menuADM = new MenuADM();
-	private ADMinput admInput = new ADMinput();
+	private MenuADM menuADM;
+	private ADMinput admInput;
 	
 	public NewInput() {
 		clientService = new ClientService();
 		accountService = new AccountService();
 		creditCardService = new CreditCardService();
 		debitCardService = new DebitCardService();
+		menuADM = new MenuADM();
+		admInput = new ADMinput();
 	}
 
 	public Client newClient() {
@@ -96,16 +99,18 @@ public class NewInput {
 				ArrayList<Client> debitCards = new ArrayList<>();
 				ArrayList<Client> creditCards = new ArrayList<>();
 
-				System.out.print("\nEnter the deposit value: ");
+				System.out.print("Enter the deposit value: ");
 				double balance = UI.getDouble();
 				while (balance < 50.00) {
 					System.out.println("\nThe minimum value to open an account is 50.00 $");
 					System.out.println("Want to cancel?");
 					int choose = UI.choose();
 					if (choose == 1) {
-						if (client.getAccounts().isEmpty()) {
-							clientService.removeListClients(client);
-						}
+//						if (client.getAccounts().isEmpty()) {
+//							clientService.removeListClients(client);
+//						}
+//						TODO: ERRO ou seja se nao tiver depoisto o cliente ja esta criado tenho que o eliminar
+//						da database mas passar por uma verificaçao pq se tiver mais contas nao posso elimina-lo
 						MenuADM.displayMenuADM();
 						menuADM.selection();
 					}
@@ -147,33 +152,32 @@ public class NewInput {
 
 						if (option == 1) { // Novo cliente secundario
 							otherClient = newClient();
-
-							System.out.println("\nDo you want Debit Card? ");
-							option = UI.choose();
-							if (option == 1) {
-								debitCards.add(otherClient);
-							}
-
-							if (creditCards.size() <= 2) {
-								System.out.println("\nDo you want Credit Card?");
+							if (otherClient != null) {
+								System.out.println("\nDo you want Debit Card? ");
 								option = UI.choose();
 								if (option == 1) {
-									creditCards.add(otherClient);
+									debitCards.add(otherClient);
 								}
-							}
-
-							otherTitulars.add(otherClient);
-
+								
+								if (creditCards.size() <= 2) {
+									System.out.println("\nDo you want Credit Card?");
+									option = UI.choose();
+									if (option == 1) {
+										creditCards.add(otherClient);
+									}
+								}
+								otherTitulars.add(otherClient);
+							}		
 						} else if (option == 2) { // cliente existente
 							otherClient = admInput.showClient();
+//							TODO: Falta uma verificação do cliente procurado com a lista de outros titulares
 							if (otherClient != null && otherClient != client) {
-
 								System.out.println("\nDo you want Debit Card?");
 								option = UI.choose();
 								if (option == 1) {
 									debitCards.add(otherClient);
 								}
-
+								
 								if (creditCards.size() <= 2) {
 									System.out.println("\nDo you want Credit Card?");
 									option = UI.choose();
@@ -190,45 +194,37 @@ public class NewInput {
 				}
 				return accountService.newAccount(client, balance, otherTitulars, debitCards, creditCards);
 	}
-	
-	public boolean verifyCreditCard(Account account, Client client) {
-		if (creditCardService.verifyAccountCreditCards(account)) {
-			if (creditCardService.verifyCreditCard(client) == false) {
-				return true;
-			} else {
-				System.out.println("\nClient can't have two Credit Cards");
-			}
-		} else {
-			System.out.println("\nAccounts can´t have more than two Credit Cards");
-		}
-		return false;
-	}
 
 	public void newCreditCard() {
 		Client client = admInput.showClient();
 		if (client != null) {
 			Account account = admInput.showAccount();
-			if (account != null && verifyCreditCard(account, client)) {
-				System.out.println(creditCardService.newCreditCard(account, client));	
+//			TODO: fazer mais uma verificação se so pode criar se o cliente for da conta claro contaclients
+			if (account != null) {
+				CreditCard creditCard = creditCardService.newCreditCard(account, client);
+				if (creditCard != null) {
+					System.out.println(creditCard);
+				} else {
+					System.out.println("Can´t make the Credit Card!");
+				}
 			}
 		}
-	}
-
-	public boolean verifyDebitCard(Client client) {
-		if (debitCardService.verifyDebitCard(client) == false) {
-			return true;
-		}
-		System.out.println("\nClient can't have two Debit Cards");
-		return false;
 	}
 	
 	public void newDebitCard() {
 		Client client = admInput.showClient();
 		if (client != null) {
 			Account account = admInput.showAccount();
-			if (account != null && debitCardService.verifyDebitCard(client)) {
-				System.out.println(debitCardService.newDebitCard(account, client));
-			}
+//			TODO: fazer mais uma verificação se so pode criar se o cliente for da conta claro contaclients
+			if (account != null) {
+				DebitCard debitCard = debitCardService.newDebitCard(account, client);
+				if (debitCard != null) {
+					System.out.println(debitCard);
+				} else {
+					System.out.println("Can't make Debit Card!");
+				}
+				
+			} 
 		}
 	}
 }

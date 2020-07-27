@@ -1,49 +1,51 @@
 package com.rumos.bank.administration.services;
 
-import com.rumos.bank.administration.ADM;
 import com.rumos.bank.administration.models.Account;
 import com.rumos.bank.administration.models.Client;
 import com.rumos.bank.administration.models.CreditCard;
+import com.rumos.bank.dao.CardsDao;
+import com.rumos.bank.dao.DaoFactory;
 
 public class CreditCardService {
 	
 	public CreditCard newCreditCard(Account account, Client titular) {
-		if(verifyCreditCard(titular) == false) {
-			if(verifyAccountCreditCards(account) == true) {
-				int creditCardNumber = ADM.creditCardNumber();
-				
-				CreditCard creditCard = new CreditCard(creditCardNumber, account, titular);
-				
-				titular.setCreditCard(creditCard);
-				account.addCreditCard(creditCard);
-				addListCreditCards(creditCard);
-				return creditCard;
-			}
-		}
+		
+		CardsDao cardsDao = DaoFactory.createCardsDao();
+		
+		if(!cardsDao.verifyCreditCard(titular.getId_client())) {
+			if(cardsDao.verifyaccountCreditCards(account.getId_account())) {
+				CreditCard creditCard = new CreditCard(account, titular);
+				creditCard = cardsDao.insert(creditCard);
+				if (creditCard != null) {
+					return creditCard;	
+				}
+			} else { System.out.println("\nAccount can only have 2 credit cards"); }
+		} else { System.out.println("\nClient can't have 2 credit cards"); }
+		
 		return null;
 	}
 	
-	public Boolean verifyCreditCard(Client client) {
-		if (client.getCreditCard() != null) {
-			return true;
-		} else
-			return false;
+	public void removeCreditCard(CreditCard creditCard) {
+		CardsDao cardsDao = DaoFactory.createCardsDao();
+		cardsDao.deleteById(creditCard.getId_creditCard());
 	}
 	
-	public Boolean verifyAccountCreditCards(Account account) {
-		if (account.getCreditCards().isEmpty() || account.getCreditCards().size() < 2) {
-			return true;
-		} else {
-
-			return false;
-		}
-	}
+//	public Boolean verifyCreditCard(Client client) {
+//		if (client.getCreditCard() != null) {
+//			return true;
+//		} else
+//			return false;
+//	}
 	
-	public void addListCreditCards(CreditCard creditCard) {
-		ADM.creditCards.add(creditCard);
-	}
+//	public Boolean verifyAccountCreditCards(Account account) {
+//		CardsDao cardsDao = DaoFactory.createCardsDao();
+//		
+//		if (cardsDao.verifyaccountCreditCards(account.getId_account())) {
+//			return true;
+//		} else {
+//
+//			return false;
+//		}
+//	}
 	
-	public void removeListCreditCards(CreditCard creditCard) {
-		ADM.creditCards.remove(creditCard);
-	}
 }

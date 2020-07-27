@@ -4,7 +4,6 @@ import com.rumos.bank.administration.models.Account;
 import com.rumos.bank.administration.models.Client;
 import com.rumos.bank.administration.models.CreditCard;
 import com.rumos.bank.administration.models.DebitCard;
-import com.rumos.bank.administration.services.ADMservice;
 import com.rumos.bank.userInterface.ADMinput;
 import com.rumos.bank.userInterface.Console;
 import com.rumos.bank.userInterface.EditInput;
@@ -13,16 +12,9 @@ import com.rumos.bank.userInterface.UI;
 
 public class MenuADM {
 
-	private ADMservice admService = new ADMservice();
-
 	public static void displayMenuADM() {
 		System.out.println(
-				"\nChoose an option:\n" 
-						+ "1 - New\n" 
-						+ "2 - Show\n" 
-						+ "3 - List\n" 
-						+ "4 - Back\n" 
-						+ "5 - Exit");
+				"\nChoose an option:\n" + "1 - New\n" + "2 - Show\n" + "3 - List\n" + "4 - Back\n" + "5 - Exit");
 	}
 
 	public void selection() {
@@ -67,12 +59,11 @@ public class MenuADM {
 	}
 
 	private void newMenu() {
-		System.out.println(
-				"\nChoose an option:\n" 
-						+ "1 - Account\n" 
-						+ "2 - Credit Card\n" 
-						+ "3 - Debit Card\n" 
-						+ "4 - Back");
+		System.out.println( "\nChoose an option:\n" 
+				+ "1 - Account\n" 
+				+ "2 - Credit Card\n" 
+				+ "3 - Debit Card\n" 
+				+ "4 - Back");
 		newSelection();
 	}
 
@@ -80,7 +71,7 @@ public class MenuADM {
 		NewInput newInput = new NewInput();
 		ADMinput admInput = new ADMinput();
 		int option = UI.getInt();
-		
+
 		switch (option) {
 		case 1:
 
@@ -95,20 +86,23 @@ public class MenuADM {
 			Account account;
 			if (option == 1) {
 				client = newInput.newClient();
-				
-				if(newInput.verifyTitularAccount(client) == true) {
+				if (client != null) {
 					account = newInput.newAccount(client);
-					System.out.println(account);
+					if (account != null) {
+						System.out.println(account);
+					} else {
+						System.out.println("This client already is titular from an account!");
+					}
+				} else {
+					System.out.println("This client already exists!");
 				}
-				
+
 			} else if (option == 2) {
 				client = admInput.showClient();
-
 				if (client != null && newInput.verifyTitularAccount(client) == true) {
 					account = newInput.newAccount(client);
 					System.out.println(account);
 				}
-
 			} else {
 				newMenu();
 			}
@@ -136,32 +130,32 @@ public class MenuADM {
 		ADMinput admInput = new ADMinput();
 		EditInput editInput = new EditInput();
 		int option = UI.getInt();
-		
+
 		switch (option) {
 		case 1:
 			Account account = admInput.showAccount();
-			
+
 			if (account != null) {
 				editInput.editAccount(account);
-			}			
+			}
 			break;
 		case 2:
 			Client client = admInput.showClient();
-			
+
 			if (client != null) {
 				editInput.editClient(client);
 			}
 			break;
 		case 3:
 			CreditCard creditCard = admInput.showCreditCard();
-			
+
 			if (creditCard != null) {
 				editInput.editCreditCard(creditCard);
 			}
 			break;
 		case 4:
 			DebitCard debitCard = admInput.showDebitCard();
-			
+
 			if (debitCard != null) {
 				editInput.editDebitCard(debitCard);
 			}
@@ -180,20 +174,19 @@ public class MenuADM {
 	}
 
 	private void listSelection() {
-
 		int option = UI.getInt();
 		switch (option) {
 		case 1:
-			admService.listAccounts();
+			ADMinput.listAccounts();
 			break;
 		case 2:
-			admService.listClients();
+			ADMinput.listClients();
 			break;
 		case 3:
-			admService.listCreditCards();
+			ADMinput.listCreditCards();
 			break;
 		case 4:
-			admService.listDebitCards();
+			ADMinput.listDebitCards();
 			break;
 		case 5:
 			displayMenuADM();

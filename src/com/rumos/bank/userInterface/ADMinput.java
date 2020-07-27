@@ -1,64 +1,67 @@
 package com.rumos.bank.userInterface;
 
-import com.rumos.bank.administration.ADM;
+import java.util.List;
+
 import com.rumos.bank.administration.models.Account;
 import com.rumos.bank.administration.models.Client;
 import com.rumos.bank.administration.models.CreditCard;
 import com.rumos.bank.administration.models.DebitCard;
-import com.rumos.bank.administration.services.ADMservice;
+import com.rumos.bank.dao.AccountDao;
+import com.rumos.bank.dao.CardsDao;
+import com.rumos.bank.dao.ClientDao;
+import com.rumos.bank.dao.DaoFactory;
 import com.rumos.bank.userInterface.UI;
 
 public class ADMinput {
-
-	private ADMservice admService; 
-	
-	public ADMinput() {
-		admService = new ADMservice();
-	}
 	
 	public Account showAccount() {
+		AccountDao accountDao = DaoFactory.createAccountDao();
 		System.out.print("\nAccount number: ");
-		int accountNumber = UI.getInt();
-		
-		if (admService.showAccount(accountNumber) != null) {
-			System.out.println(admService.showAccount(accountNumber));
-			return admService.showAccount(accountNumber);
+		int id = UI.getInt();
+		Account account = accountDao.findByid(id);
+		if (account != null) {
+			System.out.println(account);
+			return account;
 		}
 		System.out.println("\nInvalid Account number");
 		return null;
 	}
 
 	public Client showClient() {
+		ClientDao clientDao = DaoFactory.createClientDao();
 		System.out.print("\nClient NIF: ");
 		String nif = UI.scanLine();
-		
-		if (admService.showClient(nif) != null) {
-			System.out.println(admService.showClient(nif));
-			return admService.showClient(nif);
+		Client client = clientDao.findByNif(nif);
+		if (client != null) {
+			System.out.println(client);
+			return client;
+			} else {
+				System.out.println("\nInvalid NIF");
+				return null;			
 			}
-		System.out.println("\nInvalid NIF");
-		return null;	
 	}
 
 	public CreditCard showCreditCard() {
+		CardsDao cardsDao = DaoFactory.createCardsDao();
 		System.out.print("\nCredit Card number: ");
-		int creditCardNumber = UI.getInt();
-		
-		if (admService.showCreditCard(creditCardNumber) != null) {
-			System.out.println(admService.showCreditCard(creditCardNumber));
-			return admService.showCreditCard(creditCardNumber);
+		int id_card = UI.getInt();
+		CreditCard creditCard = cardsDao.findCreditCardById(id_card);
+		if (creditCard != null) {
+			System.out.println(creditCard);
+			return creditCard;
 			}
 		System.out.println("\nInvalid Credit Card number");
 		return null;
 	}
 
 	public DebitCard showDebitCard() {
+		CardsDao cardsDao = DaoFactory.createCardsDao();
 		System.out.print("\nDebit Card number: ");
-		int debitCardNumber = UI.getInt();
-		
-		if (admService.showDebitCard(debitCardNumber) != null) {
-			System.out.println(admService.showDebitCard(debitCardNumber));
-			return admService.showDebitCard(debitCardNumber);
+		int id_card = UI.getInt();
+		DebitCard debitCard = cardsDao.findDebitCardById(id_card);
+		if (debitCard != null) {
+			System.out.println(debitCard);
+			return debitCard;
 		}
 		System.out.println("\nInvalid Debit Card number");
 		return null;
@@ -66,49 +69,54 @@ public class ADMinput {
 
 	// -------------------------LIST------------------------------
 
-	public void listAccounts() {
-		if (ADM.accounts.isEmpty()) {
+	public static void listAccounts() {
+		AccountDao accountDao = DaoFactory.createAccountDao();
+		List<Account> accounts = accountDao.findAll();
+		if (accounts.isEmpty()) {
 			System.out.println("\nThis bank has no accounts");
 		} else {
 			System.out.println("\nAll Accounts");
-			for (Account account : ADM.accounts) {
-				System.out.println(
-						"Nº: " + account.getAccountNumber() + " / Titular: " + account.getMainTitular().getName());
+			for (Account account : accounts) {
+				System.out.println(account);
 			}
 		}
 	}
 
-	public void listClients() {
-		if (ADM.clients.isEmpty()) {
+	public static void listClients() {
+		ClientDao clientDao = DaoFactory.createClientDao();
+		List<Client> clients = clientDao.findAll();
+		if (clients.isEmpty()) {
 			System.out.println("\nThis bank has no clients and accounts");
 		} else {
 			System.out.println("\nAll Clients:");
-			for (Client client : ADM.clients) {
-				System.out.println("Nº: " + client.getClientNumber() + " / Name: " + client.getName());
+			for (Client client : clients) {
+				System.out.println(client);
 			}
 		}
 	}
 
-	public void listCreditCards() {
-		if (ADM.creditCards.isEmpty()) {
+	public static void listCreditCards() {
+		CardsDao cardsDao = DaoFactory.createCardsDao();
+		List<CreditCard> creditCards = cardsDao.findAllCreditCards();
+		if (creditCards.isEmpty()) {
 			System.out.println("\nThis bank has no Credit Cards");
 		} else {
 			System.out.println("\nAll Credit Cards:");
-			for (CreditCard creditCard : ADM.creditCards) {
-				System.out.println("Nº: " + creditCard.getCreditCardNumber() + "/ Titular name: "
-						+ creditCard.getTitular().getName());
+			for (CreditCard creditCard : creditCards) {
+				System.out.println(creditCard);
 			}
 		}
 	}
 
-	public void listDebitCards() {
-		if (ADM.debitCards.isEmpty()) {
+	public static void listDebitCards() {
+		CardsDao cardsDao = DaoFactory.createCardsDao();
+		List<DebitCard> debitCards = cardsDao.findAllDebitCards();
+		if (debitCards.isEmpty()) {
 			System.out.println("\nThis bank has no Debit Cards");
 		} else {
 			System.out.println("\nAll Debit Cards:");
-			for (DebitCard debitCard : ADM.debitCards) {
-				System.out.println("Nº: " + debitCard.getDebitCardNumber() + " / Titular name: "
-						+ debitCard.getTitular().getName());
+			for (DebitCard debitCard : debitCards) {
+				System.out.println(debitCard);
 			}
 		}
 	}

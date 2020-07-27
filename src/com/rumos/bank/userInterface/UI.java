@@ -20,6 +20,15 @@ public class UI {
 		return choose;
 	}
 
+//	public static Integer getInt() {
+//			Integer number = sc.nextInt();
+//			while (number <= 0) {
+//				System.out.print("\nValue must be above 0. Insert again: ");
+//				number = sc.nextInt();
+//			}
+//			return number;
+//	}
+
 	public static int getInt() {
 		int number = 0;
 		boolean inputNotNull = true;
@@ -40,7 +49,16 @@ public class UI {
 		}
 		return number;
 	}
-		
+	
+//	public static double getDouble() {
+//		double value = sc.nextDouble();
+//		while (value <= 0.0) {
+//			System.out.print("\nValue mut be above 0.0. Insert again: ");
+//			value = sc.nextDouble();
+//		}
+//		return value;
+//	}
+	
 	public static double getDouble() {
 		double number = 0.0;
 		boolean inputNotNull = true;
@@ -63,6 +81,7 @@ public class UI {
 	}
 
 	public static String scanLine() {
+//		sc.nextLine();
 		sc.skip("(\r\n|[\n\r\u2028\u2029\u0085])?");
 		return sc.nextLine();
 	}

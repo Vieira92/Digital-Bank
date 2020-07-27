@@ -2,55 +2,63 @@ package com.rumos.bank.administration.services;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 
-import com.rumos.bank.administration.ADM;
 import com.rumos.bank.administration.models.Account;
 import com.rumos.bank.administration.models.Client;
+import com.rumos.bank.dao.ClientDao;
+import com.rumos.bank.dao.DaoFactory;
 
 public class ClientService {
 
-	public void addListClients(Client client) {
-		ADM.clients.add(client);
-	}
+	private ClientDao clientDao;
 
-	public void removeListClients(Client client) {
-		ADM.clients.remove(client);
+	public ClientService() {
+		clientDao = DaoFactory.createClientDao();
 	}
 
 	public Client newClient(String name, LocalDate birth, String nif, String email, String cellphone, String telephone,
 			String occupation) {
-		int clientNumber = ADM.clientNumber();
 
-		Client client = new Client(clientNumber, name, birth, nif, email, cellphone, telephone, occupation);
-
-		addListClients(client);
-		return client;
+		if (clientDao.findByNif(nif) == null) {
+			Client client = new Client(name, birth, nif, email, cellphone, telephone, occupation);
+			client = clientDao.insert(client);
+			if (client != null) {
+				return client;
+			}
+		}
+		return null;
 	}
 
 	public void editName(Client client, String name) {
 		client.setName(nameFormat(name));
+		clientDao.update(client);
 	}
-	
+
 	public void editEmail(Client client, String email) {
 		if (verifyEmail(email)) {
 			client.setEmail(email);
+			clientDao.update(client);
 		}
 	}
-	
+
 	public void editCellphone(Client client, String cellphone) {
 //		TODO: falta formatacao
 		client.setCellphone(cellphone);
+		clientDao.update(client);
 	}
-	
+
 	public void editTelephone(Client client, String telephone) {
 //		 TODO: falta formatacao
 		client.setTelephone(telephone);
+		clientDao.update(client);
 	}
-	
+
 	public void editOccupation(Client client, String occupation) {
 		client.setOccupation(nameFormat(occupation));
+		clientDao.update(client);
 	}
-	
+
 	public String nameFormat(String name) {
 		String[] fields = name.strip().split(" ");
 		String firstName = fields[0];
@@ -81,8 +89,8 @@ public class ClientService {
 		if (period.getYears() >= 18) {
 			return true;
 		} else {
-			if(client.getAccounts().isEmpty()) {
-				removeListClients(client);
+			if (getClientAccounts(client).isEmpty()) {
+				clientDao.deleteByNif(client.getNif());
 			}
 			return false;
 		}
@@ -104,15 +112,19 @@ public class ClientService {
 	}
 
 	public Boolean verifyTitular(Client client) {
-		for (Account account : client.getAccounts()) {
-			if (account.getMainTitular() == client) {
-				if(client.getAccounts().isEmpty()) {
-					removeListClients(client);
-				}
-				return true;
-			}
+		ClientDao clientDao = DaoFactory.createClientDao();
+
+		if (clientDao.verifyTitular(client)) {
+			return true;
+		} else {
+			return false;
 		}
-		return false;
+	}
+
+	public List<Account> getClientAccounts(Client client) {
+		List<Account> list = clientDao.findClientAccounts(client.getId_client());
+		return list;
+
 	}
 }
 

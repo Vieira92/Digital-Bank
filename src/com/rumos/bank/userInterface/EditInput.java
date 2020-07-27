@@ -1,5 +1,7 @@
 package com.rumos.bank.userInterface;
 
+import java.util.List;
+
 import com.rumos.bank.administration.models.Account;
 import com.rumos.bank.administration.models.Client;
 import com.rumos.bank.administration.models.CreditCard;
@@ -14,7 +16,7 @@ import com.rumos.bank.userInterface.NewInput;
 import com.rumos.bank.userInterface.UI;
 
 public class EditInput {
-	
+
 	private AccountService accountService;
 	private ClientService clientService;
 	private CreditCardService creditCardService;
@@ -46,7 +48,7 @@ public class EditInput {
 			option = UI.getInt();
 			switch (option) {
 			case 1:
-				if (account.getOtherTitulars() == null || account.getOtherTitulars().size() < 4) {
+				if (accountService.verifyOtherTitulars(account)) {
 					System.out.println("\n1 - New client" + "\n2 - Existing client");
 					option = UI.getInt();
 					while (option != 1 && option != 2) {
@@ -57,25 +59,30 @@ public class EditInput {
 					if (option == 1) {
 						NewInput newInput = new NewInput();
 						client = newInput.newClient();
-						
-						System.out.println("\nDo you want Debit Card?");
-						option = UI.choose();
-						if (option == 1) {
-							debitCardService.newDebitCard(account, client);
+						if (client != null) {
+							System.out.println("\nDo you want Debit Card?");
+							option = UI.choose();
+							if (option == 1) {
+								if(debitCardService.newDebitCard(account, client) == null) {
+									System.out.println("Can't make Debit Card!");
+								}
+							}
+							
+							System.out.println("\nDo you want Credit Card?");
+							option = UI.choose();
+							if (option == 1) {
+								if(creditCardService.newCreditCard(account, client) == null) {
+									System.out.println("Can´t make the Credit Card!");
+								}
+							}
+							
+							addOtherTitular(account, client);
 						}
 						
-						System.out.println("\nDo you want Credit Card?");
-						option = UI.choose();
-						if (option == 1) {
-							creditCardService.newCreditCard(account, client);
-						}
-						
-						addOtherTitular(account, client);
-				
 					} else {
 						client = admInput.showClient();
-						if (client != null && !account.getOtherTitulars().contains(client)
-								&& account.getMainTitular() != client) {
+
+						if (client != null) {
 
 							System.out.println("\nDo you want Debit Card?");
 							option = UI.choose();
@@ -88,7 +95,6 @@ public class EditInput {
 							if (option == 1) {
 								creditCardService.newCreditCard(account, client);
 							}
-							
 							addOtherTitular(account, client);
 						}
 					}
@@ -97,10 +103,16 @@ public class EditInput {
 				}
 				break;
 			case 2:
+				
+				List<Client> clients = accountService.getAccountClients(account);
+				
 				Client client = admInput.showClient();
-				if (client != null && client.getAccounts().contains(account)) {
+				
+				if (client != null && clients.contains(client)) {
 					accountService.removeOtherHolder(account, client);
-				} else {
+					System.out.println("Client successfully removed");
+				} 
+				else {
 					System.out.println("\nThis nif doesn't belong to this account");
 				}
 				break;
@@ -110,7 +122,7 @@ public class EditInput {
 			case 4:
 				Account accountTo = admInput.showAccount();
 				if (accountTo != null) {
-					if (account.getAccountNumber() == accountTo.getAccountNumber()) {
+					if (account.getId_account() == accountTo.getId_account()) {
 						System.out.println("\nCan't transfer money to the same account");
 					} else {
 						System.out.print("\nEnter the amount to transfer: ");
@@ -164,7 +176,7 @@ public class EditInput {
 				clientService.editName(client, name);
 				break;
 			case 2:
-				System.out.print("Email: ");
+				System.out.print("\nEmail: ");
 				String email = UI.scanLine();
 				if (clientService.verifyEmail(email)) {
 					clientService.editEmail(client, email);
@@ -173,17 +185,17 @@ public class EditInput {
 				}
 				break;
 			case 3:
-				System.out.print("Cellphone: ");
+				System.out.print("\nCellphone: ");
 				String cellphone = UI.scanLine();
 				clientService.editCellphone(client, cellphone);
 				break;
 			case 4:
-				System.out.print("Telephone: ");
+				System.out.print("\nTelephone: ");
 				String telephone = UI.scanLine();
 				clientService.editTelephone(client, telephone);
 				break;
 			case 5:
-				System.out.print("Occupation: ");
+				System.out.print("\nOccupation: ");
 				String occupation = UI.scanLine();
 				clientService.editOccupation(client, occupation);
 				break;
@@ -205,12 +217,9 @@ public class EditInput {
 		System.out.println("\nWant to Delete?");
 		int option = UI.choose();
 		if (option == 1) {
-			
-			
-			
-			creditCard.getTitular().setCreditCard(null);
-			creditCard.getAccount().removeCreditCard(creditCard);
-			creditCardService.removeListCreditCards(creditCard);
+//			TODO: falta verificação se pode delete tipo plafond dividas
+			creditCardService.removeCreditCard(creditCard);
+			System.out.println("\nCredit Card deleted!");
 		}
 	}
 	
@@ -218,15 +227,17 @@ public class EditInput {
 		System.out.println("\nWant to Delete?");
 		int option = UI.choose();
 		if (option == 1) {
-			
-			
-			debitCard.getTitular().setDebitCard(null);
-			debitCard.getAccount().removeDebitCard(debitCard);
-			debitCardService.removeListDebitCards(debitCard);
+//			TODO: falta verificação se pode delete tipo dividas cenas
+			debitCardService.removeDebitCard(debitCard);
+			System.out.println("\nDebit Card deleted!");
 		}
 	}
 	
 	private void addOtherTitular(Account account, Client client) {
-		accountService.addOtherTitular(account, client);
+		if(accountService.addOtherTitular(account, client)) {
+			System.out.println("Inserted successfully");
+		} else {
+			System.out.println("This client can't be associated with this account");
+		}
 	}
 }

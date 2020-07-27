@@ -1,12 +1,16 @@
 package com.rumos.bank.administration.models;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Objects;
 
-public class Client {
+public class Client implements Serializable {
 
-	private int clientNumber;
+	private static final long serialVersionUID = 1L;
+	
+	private int id_client;
 	private String name;
 	private LocalDate birth;
 	private String nif;
@@ -14,15 +18,22 @@ public class Client {
 	private String cellphone;
 	private String telephone;
 	private String occupation;
+	private LocalDate creation;
 //	private String password;
 	private CreditCard creditCard;
 	private DebitCard debitCard;
 	private ArrayList<Account> accounts = new ArrayList<>();
 	
+
 	
-	public Client(int clientNumber, String name, LocalDate birth, String nif, String email, String cellphone,
-			String telephone, String occupation) {
-		this.clientNumber = clientNumber;
+	
+	public Client(int id_client, String name) {
+		this.id_client = id_client;
+		this.name = name;
+	}
+
+	public Client(String name, LocalDate birth, String nif, String email, String cellphone, String telephone,
+			String occupation ) {
 		this.name = name;
 		this.birth = birth;
 		this.nif = nif;
@@ -30,136 +41,124 @@ public class Client {
 		this.cellphone = cellphone;
 		this.telephone = telephone;
 		this.occupation = occupation;
+		this.creation = LocalDate.now();
+	}
+	
+	public Client(int id_client, String name, LocalDate birth, String nif, String email, String cellphone,
+			String telephone, String occupation, LocalDate creation) {
+		this.id_client = id_client;
+		this.name = name;
+		this.birth = birth;
+		this.nif = nif;
+		this.email = email;
+		this.cellphone = cellphone;
+		this.telephone = telephone;
+		this.occupation = occupation;
+		this.creation = creation;
 	}
 	
 	@Override
 	public String toString() {
-		DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 		String birthFormated = dtFormatter.format(birth);
 		StringBuilder sb = new StringBuilder();
-		sb.append("\nName: " + name 
-				+ "\nNumber: " + clientNumber
-				+ "\nBirth: " + birthFormated 
-				+ "\nNif: " + nif
-				+ "\nEmail: " + email 
-				+ "\nCellphone: " + cellphone 
-				+ "\nTelephone: " + telephone 
-				+ "\nOccupation: " + occupation);
-		sb.append("\n");
+		sb.append("Id: " + id_client 
+				+ "   " + name
+				+ "   Nif: " + nif
+				+ "   Birth: " + birthFormated 
+				+ "   Email: " + email 
+				+ "   Cellphone: " + cellphone 
+				+ "   Telephone: " + telephone 
+				+ "   Occupation: " + occupation);
+		
 		if(debitCard != null) {
-			sb.append("\nDebit card Nº:  " + debitCard.getDebitCardNumber() 
-					+ "   account: " + debitCard.getAccount().getAccountNumber());
+			sb.append("\nDebitCard  Id: " + debitCard.getId_debitCard() 
+					+ "    Account Id: " + debitCard.getAccount().getId_account()
+					+ "    Made: " + DateTimeFormatter.ofPattern("dd-MM-yyyy").format(debitCard.getCreation())
+					+ "    Expire: "  + DateTimeFormatter.ofPattern("dd-MM-yyyy").format(debitCard.getExpire()));
 		}
 		
 		if(creditCard != null) {
-			sb.append("\nCredit card Nº: " + creditCard.getCreditCardNumber() 
-					+ "   account: " + creditCard.getAccount().getAccountNumber());
+			sb.append("\nCreditCard Id: " + creditCard.getId_creditCard() 
+					+ "    Account Id: " + creditCard.getAccount().getId_account()
+					+ "    Made: " + DateTimeFormatter.ofPattern("dd-MM-yyyy").format(creditCard.getCreation())
+					+ "    Expire: "  + DateTimeFormatter.ofPattern("dd-MM-yyyy").format(creditCard.getExpire()));
 		}
 		
-		if(accounts.size() < 2) {
-			sb.append("\nAccount:");
-		}
-		else {
-			sb.append("\nAccounts:");
-		}
 		for(Account account : accounts) {
-			sb.append("\nNº: " + account.getAccountNumber());
-			sb.append("   Main titular: " + account.getMainTitular().name);
-			sb.append("	Balance: " + String.format("%.2f", account.getBalance()));
+			sb.append("\nAccount Id: " + account.getId_account());
+			sb.append("    Main titular: " + account.getMainTitular().name);
+			sb.append("    Balance: " + String.format("%.2f", account.getBalance()));
 		}
-
+		
 		String client = sb.toString();
 		return client;
 	}
-
+	
 	//---------------------------------------------------------------
 	
-	public int getClientNumber() {
-		return clientNumber;
-	}
-	public void setClientNumber(int clientNumber) {
-		this.clientNumber = clientNumber;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
+	public int getId_client() {	return id_client; }
 
-	public LocalDate getBirth() {
-		return birth;
-	}
-
-	public String getNif() {
-		return nif;
-	}
-
-	public void setNif(String nif) {
-		this.nif = nif;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getCellphone() {
-		return cellphone;
-	}
-
-	public void setCellphone(String cellphone) {
-		this.cellphone = cellphone;
-	}
-
-	public String getTelephone() {
-		return telephone;
-	}
-
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
-	}
-
-	public String getOccupation() {
-		return occupation;
-	}
-
-	public void setOccupation(String occupation) {
-		this.occupation = occupation;
-	}
-
-	public DebitCard getDebitCard() {
-		return debitCard;
-	}
-
-	public void setDebitCard(DebitCard debitCard) {
-		this.debitCard = debitCard;
-	}
+	public String getName() { return name; }
 	
-	public CreditCard getCreditCard() {
-		return creditCard;
-	}
+	public void setName(String name) { this.name = name; }
 
-	public void setCreditCard(CreditCard creditCard) {
-		this.creditCard = creditCard;
-	}
+	public LocalDate getBirth() { return birth; }
+
+	public String getNif() { return nif; }
+
+	public String getEmail() { return email; }
+
+	public void setEmail(String email) { this.email = email; }
+
+	public String getCellphone() { return cellphone; }
+
+	public void setCellphone(String cellphone) { this.cellphone = cellphone; }
+
+	public String getTelephone() { return telephone; }
+
+	public void setTelephone(String telephone) { this.telephone = telephone; }
+
+	public String getOccupation() { return occupation; }
+
+	public void setOccupation(String occupation) { this.occupation = occupation; }
 	
+	public LocalDate getCreation() { return creation; }
+
+	public DebitCard getDebitCard() { return debitCard; }
+
+	public void setDebitCard(DebitCard debitCard) { this.debitCard = debitCard; }
+	
+	public CreditCard getCreditCard() { return creditCard; }
+
+	public void setCreditCard(CreditCard creditCard) { this.creditCard = creditCard; }
 	
 	//-----------------------------------------------
-	
 
-	public ArrayList<Account> getAccounts() {
-		return accounts;
+//	public ArrayList<Account> getAccounts() {
+//		return accounts;
+//	}
+	
+//	public void addAccount(Account account) {
+//		accounts.add(account);
+//	}
+	
+//	public void removeAccount(Account account) {
+//		accounts.remove(account);
+//	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id_client, name);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) { return true; }
+		if (obj == null) { return false; }
+		if (getClass() != obj.getClass()) {	return false; }
+		Client other = (Client) obj;
+		return id_client == other.id_client && Objects.equals(name, other.name);
 	}
 	
-	public void addAccount(Account account) {
-		accounts.add(account);
-	}
-	
-	public void removeAccount(Account account) {
-		accounts.remove(account);
-	}
 }
