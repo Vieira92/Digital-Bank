@@ -3,20 +3,21 @@ package com.rumos.bank.administration.models;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
 public class Account  implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -464613278489188233L;
 	
 	private int id_account; 
 	private Client mainTitular;
 	private double balance;
 	private LocalDate creation;
-	private ArrayList<Client> otherTitulars = new ArrayList<>();
-	private ArrayList<DebitCard> debitCards = new ArrayList<>();
-	private ArrayList<CreditCard> creditCards = new ArrayList<>();
+	private List<Client> otherTitulars = new ArrayList<>();
+	private List<DebitCard> debitCards = new ArrayList<>();
+	private List<CreditCard> creditCards = new ArrayList<>();
 
 	
 
@@ -73,19 +74,19 @@ public class Account  implements Serializable {
 	
 	public void removeOtherTitular(Client otherTitular) { otherTitulars.remove(otherTitular); }
 	
-	public ArrayList<Client> getOtherTitulars() { return otherTitulars; }
+	public List<Client> getOtherTitulars() { return otherTitulars; }
 	
 	public void addDebitCard(DebitCard debitCard) {	debitCards.add(debitCard); }
 	
 	public void removeDebitCard(DebitCard debitCard) { debitCards.remove(debitCard); }
 	
-	public ArrayList<DebitCard> getDebitCards() { return debitCards; }
+	public List<DebitCard> getDebitCards() { return debitCards; }
 	
 	public void addCreditCard(CreditCard creditCard) { creditCards.add(creditCard); }
 	
 	public void removeCreditCard(CreditCard creditCard) { creditCards.remove(creditCard); }
 	
-	public ArrayList<CreditCard> getCreditCards() { return creditCards;	}
+	public List<CreditCard> getCreditCards() { return creditCards;	}
 
 	@Override
 	public int hashCode() {

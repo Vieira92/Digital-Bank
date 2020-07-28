@@ -1,37 +1,43 @@
 package com.rumos.bank.administration.models;
 
+import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Objects;
 
-public class CreditCard extends Cards {
+public class CreditCard extends Card implements Serializable {
 
-	private int id_creditCard;
-	private Account account;
-	private Client titular;
-	private LocalDate creation;
-	private LocalDate expire;
+	private static final long serialVersionUID = 9138602685903142518L;
+	
+//	private int id_creditCard;
+//	private Account account;
+//	private Client titular;
+//	private LocalDate creation;
+//	private LocalDate expire;
 	private double plafond;
 	private final String  type = "C";
 //	valor já levantado hoje (dia)
 //	atribuiçao de pin e alteraçao
 //	private Integer pin;
 		
-	
-	
-	
 	public CreditCard(Account account, Client titular) {
-		this.account = account;
-		this.titular = titular;
-		this.creation = LocalDate.now();
-		this.expire = creation.plusYears(4);
+		super(account, titular);
 		this.plafond = 500.00;
 	}
 	
-	public CreditCard(int id_creditCard, Account account, Client titular, LocalDate creation, LocalDate expire,
+	
+//	public CreditCard(Account account, Client titular) {
+//		this.account = account;
+//		this.titular = titular;
+//		this.creation = LocalDate.now();
+//		this.expire = creation.plusYears(4);
+//		this.plafond = 500.00;
+//	}
+//	
+	public CreditCard(int idCard, Account account, Client titular, LocalDate creation, LocalDate expire,
 			double plafond) {
-		this.id_creditCard = id_creditCard;
+		super(account, titular);
+		this.idCard = idCard;
 		this.account = account;
 		this.titular = titular;
 		this.creation = creation;
@@ -42,30 +48,40 @@ public class CreditCard extends Cards {
 	@Override
 	public String toString() {
 		Locale.setDefault(Locale.US);
-		return "CreditCard Id: " + id_creditCard 
+		return "CreditCard Id: " + idCard 
 				+ "    Account Id: " + account.getId_account()				
-				+ "    Made: " + DateTimeFormatter.ofPattern("dd-MM-yyyy").format(creation)
-				+ "  Expire: " + DateTimeFormatter.ofPattern("dd-MM-yyyy").format(expire)
+				+ "    Made: " + getFormattedCreation()
+				+ "  Expire: " + getFormattedExpire()
 				+ "    Owner Id: " + titular.getId_client()
 				+ "  " + titular.getName()
 				+ "    Planfond: " + String.format("%.2f", plafond);
 	}
 	
+	
+
 	//-------------------------------------------------------
 
-	public int getId_creditCard() { return id_creditCard; }
-
-	public Account getAccount() { return account; }
-	
-	public Client getTitular() { return titular; }
-	
-	public LocalDate getCreation() { return creation; }
-
-	public void setCreation(LocalDate creation) { this.creation = creation; }
-	
-	public LocalDate getExpire() { return expire; }
-
-	public void setExpire(LocalDate expire) { this.expire = expire;	}
+//	public int getId_creditCard() { return id_creditCard; }
+//
+//	public Account getAccount() { return account; }
+//	
+//	public Client getTitular() { return titular; }
+//	
+//	public LocalDate getCreation() { return creation; }
+//	
+//	public String getFormattedCreation() {
+//		return DateTimeFormatter.ofPattern("dd-MM-yyyy").format(creation);
+//	}
+//
+//	public void setCreation(LocalDate creation) { this.creation = creation; }
+//	
+//	public LocalDate getExpire() { return expire; }
+//	
+//	public String getFormattedExpire() {
+//		return DateTimeFormatter.ofPattern("dd-MM-yyyy").format(expire);
+//	}
+//
+//	public void setExpire(LocalDate expire) { this.expire = expire;	}
 	
 	public double getPlafond() { return plafond; }
 
@@ -75,7 +91,7 @@ public class CreditCard extends Cards {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id_creditCard);
+		return Objects.hash(idCard);
 	}
 
 	@Override
@@ -84,6 +100,6 @@ public class CreditCard extends Cards {
 		if (obj == null) { return false; }
 		if (getClass() != obj.getClass()) {	return false; }
 		CreditCard other = (CreditCard) obj;
-		return id_creditCard == other.id_creditCard;
+		return idCard == other.idCard;
 	}
 }

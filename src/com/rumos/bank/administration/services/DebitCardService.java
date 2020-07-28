@@ -25,7 +25,7 @@ public class DebitCardService {
 	
 	public void removeDebitCard(DebitCard debitCard) {
 		CardsDao cardsDao = DaoFactory.createCardsDao();
-		cardsDao.deleteById(debitCard.getId_debitCard());
+		cardsDao.deleteById(debitCard.getIdCard());
 	}
 
 //	public Boolean verifyDebitCard(Client client) {

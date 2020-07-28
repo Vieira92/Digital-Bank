@@ -4,11 +4,12 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Client implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -1986525952012234520L;
 	
 	private int id_client;
 	private String name;
@@ -22,7 +23,7 @@ public class Client implements Serializable {
 //	private String password;
 	private CreditCard creditCard;
 	private DebitCard debitCard;
-	private ArrayList<Account> accounts = new ArrayList<>();
+	private List<Account> accounts = new ArrayList<>();
 	
 
 	
@@ -59,30 +60,29 @@ public class Client implements Serializable {
 	
 	@Override
 	public String toString() {
-		DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-		String birthFormated = dtFormatter.format(birth);
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("Id: " + id_client 
 				+ "   " + name
 				+ "   Nif: " + nif
-				+ "   Birth: " + birthFormated 
+				+ "   Birth: " + DateTimeFormatter.ofPattern("dd-MM-yyyy").format(birth)
 				+ "   Email: " + email 
 				+ "   Cellphone: " + cellphone 
 				+ "   Telephone: " + telephone 
 				+ "   Occupation: " + occupation);
 		
 		if(debitCard != null) {
-			sb.append("\nDebitCard  Id: " + debitCard.getId_debitCard() 
+			sb.append("\nDebitCard  Id: " + debitCard.getIdCard() 
 					+ "    Account Id: " + debitCard.getAccount().getId_account()
-					+ "    Made: " + DateTimeFormatter.ofPattern("dd-MM-yyyy").format(debitCard.getCreation())
-					+ "    Expire: "  + DateTimeFormatter.ofPattern("dd-MM-yyyy").format(debitCard.getExpire()));
+					+ "    Made: " + debitCard.getFormattedCreation()
+					+ "    Expire: "  + debitCard.getFormattedExpire());
 		}
 		
 		if(creditCard != null) {
-			sb.append("\nCreditCard Id: " + creditCard.getId_creditCard() 
+			sb.append("\nCreditCard Id: " + creditCard.getIdCard() 
 					+ "    Account Id: " + creditCard.getAccount().getId_account()
-					+ "    Made: " + DateTimeFormatter.ofPattern("dd-MM-yyyy").format(creditCard.getCreation())
-					+ "    Expire: "  + DateTimeFormatter.ofPattern("dd-MM-yyyy").format(creditCard.getExpire()));
+					+ "    Made: " + creditCard.getFormattedCreation()
+					+ "    Expire: "  + creditCard.getFormattedExpire());
 		}
 		
 		for(Account account : accounts) {
@@ -95,8 +95,10 @@ public class Client implements Serializable {
 		return client;
 	}
 	
-	//---------------------------------------------------------------
 	
+	
+	//---------------------------------------------------------------
+
 	public int getId_client() {	return id_client; }
 
 	public String getName() { return name; }

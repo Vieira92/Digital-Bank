@@ -27,7 +27,7 @@ public class CreditCardService {
 	
 	public void removeCreditCard(CreditCard creditCard) {
 		CardsDao cardsDao = DaoFactory.createCardsDao();
-		cardsDao.deleteById(creditCard.getId_creditCard());
+		cardsDao.deleteById(creditCard.getIdCard());
 	}
 	
 //	public Boolean verifyCreditCard(Client client) {

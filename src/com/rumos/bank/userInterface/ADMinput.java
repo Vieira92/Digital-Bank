@@ -3,6 +3,7 @@ package com.rumos.bank.userInterface;
 import java.util.List;
 
 import com.rumos.bank.administration.models.Account;
+import com.rumos.bank.administration.models.Card;
 import com.rumos.bank.administration.models.Client;
 import com.rumos.bank.administration.models.CreditCard;
 import com.rumos.bank.administration.models.DebitCard;
@@ -97,12 +98,12 @@ public class ADMinput {
 
 	public static void listCreditCards() {
 		CardsDao cardsDao = DaoFactory.createCardsDao();
-		List<CreditCard> creditCards = cardsDao.findAllCreditCards();
+		List<Card> creditCards = cardsDao.findAllTypeCards("C");
 		if (creditCards.isEmpty()) {
 			System.out.println("\nThis bank has no Credit Cards");
 		} else {
 			System.out.println("\nAll Credit Cards:");
-			for (CreditCard creditCard : creditCards) {
+			for (Card creditCard : creditCards) {
 				System.out.println(creditCard);
 			}
 		}
@@ -110,12 +111,12 @@ public class ADMinput {
 
 	public static void listDebitCards() {
 		CardsDao cardsDao = DaoFactory.createCardsDao();
-		List<DebitCard> debitCards = cardsDao.findAllDebitCards();
+		List<Card> debitCards = cardsDao.findAllTypeCards("D");
 		if (debitCards.isEmpty()) {
 			System.out.println("\nThis bank has no Debit Cards");
 		} else {
 			System.out.println("\nAll Debit Cards:");
-			for (DebitCard debitCard : debitCards) {
+			for (Card debitCard : debitCards) {
 				System.out.println(debitCard);
 			}
 		}

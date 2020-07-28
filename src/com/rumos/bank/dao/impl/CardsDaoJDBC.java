@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.rumos.bank.administration.models.Account;
-import com.rumos.bank.administration.models.Cards;
+import com.rumos.bank.administration.models.Card;
 import com.rumos.bank.administration.models.Client;
 import com.rumos.bank.administration.models.CreditCard;
 import com.rumos.bank.administration.models.DebitCard;
@@ -155,80 +155,6 @@ public class CardsDaoJDBC implements CardsDao {
 	public void deleteByClient(int id_client) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public List<DebitCard> findAllDebitCards() {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-
-		try {
-			st = conn.prepareStatement("SELECT C.*, CL.name " 
-					+ "FROM cards C "
-					+ "INNER JOIN client CL "
-					+ "ON C.id_client = CL.id_client "
-					+ "WHERE type = 'D' ORDER BY id_card");
-
-			rs = st.executeQuery();
-
-			List<DebitCard> list = new ArrayList<>();
-			while (rs.next()) {
-				Client client = new Client(rs.getInt("id_client"), rs.getString("name"));
-				Account account = new Account(rs.getInt("id_account"));
-				
-				DebitCard debitCard = new DebitCard(
-						rs.getInt("id_card"), 
-						account,
-						client, 
-						rs.getDate("creation").toLocalDate(), 
-						rs.getDate("expire").toLocalDate());
-
-				list.add(debitCard);
-			}
-			return list;
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-	}
-
-	@Override
-	public List<CreditCard> findAllCreditCards() {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-
-		try {
-			st = conn.prepareStatement("SELECT C.*, CL.name " 
-					+ "FROM cards C "
-					+ "INNER JOIN client CL "
-					+ "ON C.id_client = CL.id_client "
-					+ "WHERE type = 'C' ORDER BY id_card");
-
-			rs = st.executeQuery();
-
-			List<CreditCard> list = new ArrayList<>();
-			while (rs.next()) {
-				Client client = new Client(rs.getInt("id_client"), rs.getString("name"));
-				Account account = new Account(rs.getInt("id_account"));
-				
-				CreditCard creditCard = new CreditCard(rs.getInt("id_card"), 
-						account, 
-						client, 
-						rs.getDate("creation").toLocalDate(), 
-						rs.getDate("expire").toLocalDate(), 
-						rs.getDouble("plafond"));
-
-				list.add(creditCard);
-			}
-			return list;
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
 	}
 
 	@Override
@@ -397,9 +323,103 @@ public class CardsDaoJDBC implements CardsDao {
 	}
 
 	@Override
-	public List<Cards> findAccountCards(int id_account) {
+	public List<Card> findAccountCards(int id_account) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
+	public List<Card> findAllTypeCards(String type) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+
+		try {
+			st = conn.prepareStatement("SELECT C.*, CL.name " 
+					+ "FROM cards C "
+					+ "INNER JOIN client CL "
+					+ "ON C.id_client = CL.id_client "
+					+ "WHERE type = ?");
+
+			st.setString(1, type);
+			rs = st.executeQuery();
+
+			List<Card> list = new ArrayList<>();
+			while (rs.next()) {
+				Client client = new Client(rs.getInt("id_client"), rs.getString("name"));
+				Account account = new Account(rs.getInt("id_account"));
+				
+				Card card;
+				if(type == "C") {
+					card = new CreditCard(rs.getInt("id_card"), 
+							account, 
+							client, 
+							rs.getDate("creation").toLocalDate(), 
+							rs.getDate("expire").toLocalDate(), 
+							rs.getDouble("plafond")); 
+				} else {
+					card = new DebitCard(rs.getInt("id_card"), 
+							account, 
+							client, 
+							rs.getDate("creation").toLocalDate(), 
+							rs.getDate("expire").toLocalDate());
+				}
+				
+
+				list.add(card);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+
+//	@Override
+//	public <T extends Card> T findCardById(int id_card) {
+//		PreparedStatement st = null;
+//		ResultSet rs = null;
+//
+//		try {
+//			st = conn.prepareStatement("SELECT C.*, CL.name " 
+//					+ "FROM cards C "
+//					+ "INNER JOIN client CL "
+//					+ "ON C.id_client = CL.id_client "
+//					+ "WHERE C.id_card = ?");
+//
+//			st.setInt(1, id_card);
+//			rs = st.executeQuery();
+//			
+//			if (rs.next()) {
+//				Client client = new Client(rs.getInt("id_client"), rs.getString("name"));
+//				Account account = new Account(rs.getInt("id_account"));
+//				
+//				T card;
+//				if(rs.getString("type") == "C") {
+//				card = new CreditCard(rs.getInt("id_card"), 
+//							account, 
+//							client, 
+//							rs.getDate("creation").toLocalDate(), 
+//							rs.getDate("expire").toLocalDate(), 
+//							rs.getDouble("plafond")); 
+//				} else {
+//				card = new DebitCard(rs.getInt("id_card"), 
+//							account, 
+//							client, 
+//							rs.getDate("creation").toLocalDate(), 
+//							rs.getDate("expire").toLocalDate());
+//				}
+//				return card;
+//			}
+//			
+//			return null;
+//			
+//		} catch (SQLException e) {
+//			throw new DbException(e.getMessage());
+//		} finally {
+//			DB.closeStatement(st);
+//			DB.closeResultSet(rs);
+//		}
+//	}
 }

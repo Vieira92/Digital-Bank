@@ -6,6 +6,7 @@ import com.rumos.bank.userInterface.UI;
 public class Main {
 	public static void main(String[] args) {
 
+		
 		new Console();
 
 		// este e so just in case porque tem nos menus tambem

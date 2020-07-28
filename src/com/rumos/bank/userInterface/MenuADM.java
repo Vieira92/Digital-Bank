@@ -147,8 +147,7 @@ public class MenuADM {
 			}
 			break;
 		case 3:
-			CreditCard creditCard = admInput.showCreditCard();
-
+			CreditCard creditCard = admInput.showCreditCard(); 
 			if (creditCard != null) {
 				editInput.editCreditCard(creditCard);
 			}
