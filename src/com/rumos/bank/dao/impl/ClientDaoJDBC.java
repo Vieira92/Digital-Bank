@@ -9,11 +9,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rumos.bank.administration.models.Account;
-import com.rumos.bank.administration.models.Client;
 import com.rumos.bank.dao.ClientDao;
 import com.rumos.bank.db.DB;
 import com.rumos.bank.db.DbException;
+import com.rumos.bank.model.Account;
+import com.rumos.bank.model.Client;
 
 public class ClientDaoJDBC implements ClientDao {
 
@@ -236,40 +236,6 @@ public class ClientDaoJDBC implements ClientDao {
 		} finally {
 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
-		}		
-//		TODO: ARRANJAR ISTO DA ERRO NO QUERY MAS ELE ESTA CERTO NAO ENTENDO
-//		try {
-//			st = conn.prepareStatement("SELECT AC.id_client, A.*, C.name " 
-//					+ "FROM account_clients AC "
-//					+ "INNER JOIN account A "
-//					+ "ON AC.id_account = A.id_account "
-//					+ "INNER JOIN client C "
-//					+ "ON A.id_titular = C.id_client"
-//					+ "WHERE AC.id_client = ?");
-//					
-//
-//			st.setInt(1, id_client);
-//			rs = st.executeQuery();
-//			
-//			List<Account> list = new ArrayList<>();
-//			
-//			while (rs.next()) {
-//				Client client = new Client(rs.getInt("id_titular"), 
-//						rs.getString("name"));
-//				Account account = new Account(rs.getInt("id_account"), 
-//						client, 
-//						rs.getDouble("balance"), 
-//						rs.getDate("create_acc").toLocalDate());
-//				list.add(account);
-//			}
-//			return list;
-//			
-//		} catch (SQLException e) {
-//			throw new DbException(e.getMessage());
-//		} finally {
-//			DB.closeStatement(st);
-//			DB.closeResultSet(rs);
-//		}		
+		}			
 	}
-
 }

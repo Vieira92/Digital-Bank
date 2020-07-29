@@ -1,4 +1,4 @@
-package com.rumos.bank.administration.models;
+package com.rumos.bank.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -94,10 +94,8 @@ public class Client implements Serializable {
 		String client = sb.toString();
 		return client;
 	}
-	
-	
-	
-	//---------------------------------------------------------------
+		
+
 
 	public int getId_client() {	return id_client; }
 
@@ -135,19 +133,7 @@ public class Client implements Serializable {
 
 	public void setCreditCard(CreditCard creditCard) { this.creditCard = creditCard; }
 	
-	//-----------------------------------------------
 
-//	public ArrayList<Account> getAccounts() {
-//		return accounts;
-//	}
-	
-//	public void addAccount(Account account) {
-//		accounts.add(account);
-//	}
-	
-//	public void removeAccount(Account account) {
-//		accounts.remove(account);
-//	}
 
 	@Override
 	public int hashCode() {

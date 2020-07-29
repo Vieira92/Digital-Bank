@@ -2,15 +2,15 @@ package com.rumos.bank.userInterface;
 
 import java.util.List;
 
-import com.rumos.bank.administration.models.Account;
-import com.rumos.bank.administration.models.Card;
-import com.rumos.bank.administration.models.Client;
-import com.rumos.bank.administration.models.CreditCard;
-import com.rumos.bank.administration.models.DebitCard;
 import com.rumos.bank.dao.AccountDao;
 import com.rumos.bank.dao.CardsDao;
 import com.rumos.bank.dao.ClientDao;
 import com.rumos.bank.dao.DaoFactory;
+import com.rumos.bank.model.Account;
+import com.rumos.bank.model.Card;
+import com.rumos.bank.model.Client;
+import com.rumos.bank.model.CreditCard;
+import com.rumos.bank.model.DebitCard;
 import com.rumos.bank.userInterface.UI;
 
 public class ADMinput {

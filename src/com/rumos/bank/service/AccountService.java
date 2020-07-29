@@ -1,15 +1,15 @@
-package com.rumos.bank.administration.services;
+package com.rumos.bank.service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rumos.bank.administration.models.Account;
-import com.rumos.bank.administration.models.Client;
-import com.rumos.bank.administration.models.CreditCard;
-import com.rumos.bank.administration.models.DebitCard;
 import com.rumos.bank.dao.AccountDao;
 import com.rumos.bank.dao.ClientDao;
 import com.rumos.bank.dao.DaoFactory;
+import com.rumos.bank.model.Account;
+import com.rumos.bank.model.Client;
+import com.rumos.bank.model.CreditCard;
+import com.rumos.bank.model.DebitCard;
 
 public class AccountService {
 
@@ -85,19 +85,15 @@ public class AccountService {
 	}
 
 	public List<Client> getAccountClients(Account account) {
-		List<Client> list = accountDao.findAccountClients(account.getId_account());
-		return list;
-
+		return accountDao.findAccountClients(account.getId_account());
 	}
 
 	public List<CreditCard> getAccountCreditCards(Account account) {
-		List<CreditCard> list = accountDao.findAccountCreditCards(account.getId_account());
-		return list;
+		return accountDao.findAccountCreditCards(account.getId_account());
 	}
 
 	public List<DebitCard> getAccountDebitCards(Account account) {
-		List<DebitCard> list = accountDao.findAccountDebitCards(account.getId_account());
-		return list;
+		return accountDao.findAccountDebitCards(account.getId_account());
 	}
 
 	public void removeOtherHolder(Account account, Client client) {
@@ -108,18 +104,24 @@ public class AccountService {
 			List<DebitCard> accountDebitCards = getAccountDebitCards(account);
 			List<CreditCard> accountCreditCards = getAccountCreditCards(account);
 
-			for (DebitCard debitCard : accountDebitCards) {
-				if (debitCard.getTitular().equals(client)) {
-					debitCardService.removeDebitCard(debitCard);
+			if (!accountDebitCards.isEmpty()) {
+				for (DebitCard debitCard : accountDebitCards) {
+					if (debitCard.getTitular().equals(client)) {
+						debitCardService.removeDebitCard(debitCard);
+					}
 				}
 			}
 
-			for (CreditCard creditCard : accountCreditCards) {
-				if (creditCard.getTitular().equals(client)) {
-//					TODO: TEM que tratar dos plafonds e dividas
-					creditCardService.removeCreditCard(creditCard);
+
+			if(!accountCreditCards.isEmpty()) {
+				for (CreditCard creditCard : accountCreditCards) {
+					if (creditCard.getTitular().equals(client)) {
+//						TODO: TEM que tratar dos plafonds e dividas
+						creditCardService.removeCreditCard(creditCard);
+					}
 				}
 			}
+			
 
 			List<Account> clientAccounts = clientService.getClientAccounts(client);
 			clientAccounts.remove(account);
@@ -132,6 +134,7 @@ public class AccountService {
 
 	public void removeAccount(Account account) {
 		Client titular = account.getMainTitular();
+		
 		List<Client> accountClients = getAccountClients(account);
 
 		accountClients.remove(titular);
@@ -141,6 +144,7 @@ public class AccountService {
 
 		List<DebitCard> accountDebitCards = getAccountDebitCards(account);
 		List<CreditCard> accountCreditCards = getAccountCreditCards(account);
+
 
 		for (DebitCard debitCard : accountDebitCards) {
 			if (debitCard.getTitular().equals(titular)) {
@@ -157,13 +161,12 @@ public class AccountService {
 
 		List<Account> titularAccounts = clientService.getClientAccounts(titular);
 		titularAccounts.remove(account);
+		
 		accountDao.deleteAccount_client(account.getId_account(), account.getMainTitular().getId_client());
-		accountDao.deleteById(account.getId_account());
+		accountDao.deleteById(account.getId_account());	
 
 		if (titularAccounts.isEmpty()) {
-//			TODO: elimino o cliente	mas se o cliente tiver cartoes tenho que os eliminar primeiro 
-//			 melhor fazer um metodo delete client
-			clientDao.deleteByNif(titular.getNif());
+			clientService.deleteClient(titular); 
 		}
 	}
 

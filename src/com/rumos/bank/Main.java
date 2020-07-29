@@ -9,7 +9,6 @@ public class Main {
 		
 		new Console();
 
-		// este e so just in case porque tem nos menus tambem
 		System.out.println("saiu aqui ver o problema");
 		UI.scClose();
 		System.exit(0);

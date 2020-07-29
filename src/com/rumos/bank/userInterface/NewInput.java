@@ -2,15 +2,14 @@ package com.rumos.bank.userInterface;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-
-import com.rumos.bank.administration.models.Account;
-import com.rumos.bank.administration.models.Client;
-import com.rumos.bank.administration.models.CreditCard;
-import com.rumos.bank.administration.models.DebitCard;
-import com.rumos.bank.administration.services.AccountService;
-import com.rumos.bank.administration.services.ClientService;
-import com.rumos.bank.administration.services.CreditCardService;
-import com.rumos.bank.administration.services.DebitCardService;
+import com.rumos.bank.model.Account;
+import com.rumos.bank.model.Client;
+import com.rumos.bank.model.CreditCard;
+import com.rumos.bank.model.DebitCard;
+import com.rumos.bank.service.AccountService;
+import com.rumos.bank.service.ClientService;
+import com.rumos.bank.service.CreditCardService;
+import com.rumos.bank.service.DebitCardService;
 import com.rumos.bank.userInterface.ADMinput;
 import com.rumos.bank.userInterface.MenuADM;
 import com.rumos.bank.userInterface.UI;
@@ -57,7 +56,8 @@ public class NewInput {
 		// TODO: falta metodo de verificacao formataçao de nif
 
 		System.out.print("Email: ");
-		String email = UI.scanLine(); // na verificacao falta por que no mail nao pode haver espacos por exemplo
+		String email = UI.scanLine(); 
+		// TODO: na verificacao falta por que no mail nao pode haver espacos por exemplo
 		while (!clientService.verifyEmail(email)) {
 			System.out.println("Invalid email. write again:");
 			email = UI.scanLine();
@@ -106,11 +106,7 @@ public class NewInput {
 					System.out.println("Want to cancel?");
 					int choose = UI.choose();
 					if (choose == 1) {
-//						if (client.getAccounts().isEmpty()) {
-//							clientService.removeListClients(client);
-//						}
-//						TODO: ERRO ou seja se nao tiver depoisto o cliente ja esta criado tenho que o eliminar
-//						da database mas passar por uma verificaçao pq se tiver mais contas nao posso elimina-lo
+						clientService.deleteClient(client);
 						MenuADM.displayMenuADM();
 						menuADM.selection();
 					}
@@ -155,41 +151,34 @@ public class NewInput {
 							if (otherClient != null) {
 								System.out.println("\nDo you want Debit Card? ");
 								option = UI.choose();
-								if (option == 1) {
-									debitCards.add(otherClient);
-								}
+								if (option == 1) { debitCards.add(otherClient);	}
 								
 								if (creditCards.size() <= 2) {
 									System.out.println("\nDo you want Credit Card?");
 									option = UI.choose();
-									if (option == 1) {
-										creditCards.add(otherClient);
-									}
+									if (option == 1) { creditCards.add(otherClient); }
 								}
 								otherTitulars.add(otherClient);
 							}		
 						} else if (option == 2) { // cliente existente
 							otherClient = admInput.showClient();
-//							TODO: Falta uma verificação do cliente procurado com a lista de outros titulares
-							if (otherClient != null && otherClient != client) {
-								System.out.println("\nDo you want Debit Card?");
-								option = UI.choose();
-								if (option == 1) {
-									debitCards.add(otherClient);
-								}
-								
-								if (creditCards.size() <= 2) {
-									System.out.println("\nDo you want Credit Card?");
+							if (!otherTitulars.contains(otherClient)) {
+								if (otherClient != null && otherClient != client) {
+									System.out.println("\nDo you want Debit Card?");
 									option = UI.choose();
-									if (option == 1) {
-										creditCards.add(otherClient);
+									
+									if (option == 1) { debitCards.add(otherClient); }
+									
+									if (creditCards.size() <= 2) {
+										System.out.println("\nDo you want Credit Card?");
+										option = UI.choose();
+										if (option == 1) { creditCards.add(otherClient); }
 									}
+									otherTitulars.add(otherClient);
 								}
-								otherTitulars.add(otherClient);
-							}
-						} else {
-							System.out.println("Pass");
-						}
+							} else { System.out.println("This client has already been added to the account"); }
+	
+						} else { System.out.println("Pass"); }
 					}
 				}
 				return accountService.newAccount(client, balance, otherTitulars, debitCards, creditCards);
@@ -199,8 +188,8 @@ public class NewInput {
 		Client client = admInput.showClient();
 		if (client != null) {
 			Account account = admInput.showAccount();
-//			TODO: fazer mais uma verificação se so pode criar se o cliente for da conta claro contaclients
-			if (account != null) {
+
+			if (account != null && accountService.getAccountClients(account).contains(client)) {
 				CreditCard creditCard = creditCardService.newCreditCard(account, client);
 				if (creditCard != null) {
 					System.out.println(creditCard);
@@ -215,15 +204,14 @@ public class NewInput {
 		Client client = admInput.showClient();
 		if (client != null) {
 			Account account = admInput.showAccount();
-//			TODO: fazer mais uma verificação se so pode criar se o cliente for da conta claro contaclients
-			if (account != null) {
+
+			if (account != null && accountService.getAccountClients(account).contains(client)) {
 				DebitCard debitCard = debitCardService.newDebitCard(account, client);
 				if (debitCard != null) {
 					System.out.println(debitCard);
 				} else {
 					System.out.println("Can't make Debit Card!");
 				}
-				
 			} 
 		}
 	}

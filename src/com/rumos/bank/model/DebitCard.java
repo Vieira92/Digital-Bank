@@ -1,4 +1,4 @@
-package com.rumos.bank.administration.models;
+package com.rumos.bank.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -8,11 +8,6 @@ public class DebitCard extends Card implements Serializable {
 
 	private static final long serialVersionUID = -5196255457840326045L;
 	
-//	private int id_debitCard;
-//	private Account account;
-//	private Client titular;
-//	private LocalDate creation;
-//	private LocalDate expire;
 	private final String  type = "D";
 	// valor já levantado hoje (dia)
 	// atribuiçao de pin e alteraçao
@@ -44,30 +39,6 @@ public class DebitCard extends Card implements Serializable {
 				+ "  "+ titular.getName();
 	}
 		
-	//--------------------------------------------------------
-	
-//	public int getId_debitCard() { return idCard; }
-//
-//	public Account getAccount() { return account; }
-//		
-//	public Client getTitular() { return titular; }
-//	
-//	public LocalDate getCreation() { return creation; }
-//	
-//	public String getFormattedCreation() {
-//		return DateTimeFormatter.ofPattern("dd-MM-yyyy").format(creation);
-//	}
-//	
-//	public void setCreation(LocalDate creation) { this.creation = creation;	}
-//
-//	public LocalDate getExpire() { return expire; }
-//	
-//	public String getFormattedExpire() {
-//		return DateTimeFormatter.ofPattern("dd-MM-yyyy").format(expire);
-//	}
-//
-//	public void setExpire(LocalDate expire) { this.expire = expire;	}
-	
 	public String getType() { return type; }
 
 	@Override

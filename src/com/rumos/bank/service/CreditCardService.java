@@ -1,10 +1,10 @@
-package com.rumos.bank.administration.services;
+package com.rumos.bank.service;
 
-import com.rumos.bank.administration.models.Account;
-import com.rumos.bank.administration.models.Client;
-import com.rumos.bank.administration.models.CreditCard;
 import com.rumos.bank.dao.CardsDao;
 import com.rumos.bank.dao.DaoFactory;
+import com.rumos.bank.model.Account;
+import com.rumos.bank.model.Client;
+import com.rumos.bank.model.CreditCard;
 
 public class CreditCardService {
 	
@@ -12,7 +12,7 @@ public class CreditCardService {
 		
 		CardsDao cardsDao = DaoFactory.createCardsDao();
 		
-		if(!cardsDao.verifyCreditCard(titular.getId_client())) {
+		if(!cardsDao.verifyClientCard(titular.getId_client(), "C")) {
 			if(cardsDao.verifyaccountCreditCards(account.getId_account())) {
 				CreditCard creditCard = new CreditCard(account, titular);
 				creditCard = cardsDao.insert(creditCard);
@@ -29,23 +29,4 @@ public class CreditCardService {
 		CardsDao cardsDao = DaoFactory.createCardsDao();
 		cardsDao.deleteById(creditCard.getIdCard());
 	}
-	
-//	public Boolean verifyCreditCard(Client client) {
-//		if (client.getCreditCard() != null) {
-//			return true;
-//		} else
-//			return false;
-//	}
-	
-//	public Boolean verifyAccountCreditCards(Account account) {
-//		CardsDao cardsDao = DaoFactory.createCardsDao();
-//		
-//		if (cardsDao.verifyaccountCreditCards(account.getId_account())) {
-//			return true;
-//		} else {
-//
-//			return false;
-//		}
-//	}
-	
 }

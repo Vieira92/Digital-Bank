@@ -1,9 +1,9 @@
 package com.rumos.bank.userInterface;
 
-import com.rumos.bank.administration.models.Account;
-import com.rumos.bank.administration.models.Client;
-import com.rumos.bank.administration.models.CreditCard;
-import com.rumos.bank.administration.models.DebitCard;
+import com.rumos.bank.model.Account;
+import com.rumos.bank.model.Client;
+import com.rumos.bank.model.CreditCard;
+import com.rumos.bank.model.DebitCard;
 import com.rumos.bank.userInterface.ADMinput;
 import com.rumos.bank.userInterface.Console;
 import com.rumos.bank.userInterface.EditInput;

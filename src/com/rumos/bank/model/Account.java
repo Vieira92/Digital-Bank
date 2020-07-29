@@ -1,4 +1,4 @@
-package com.rumos.bank.administration.models;
+package com.rumos.bank.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -42,8 +42,6 @@ public class Account  implements Serializable {
 	@Override
 	public String toString() {
 		Locale.setDefault(Locale.US);
-//		DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//		String birthFormated = dtFormatter.format(date);
 		StringBuilder sb = new StringBuilder();
 		sb.append("Account Id: " + id_account 
 				+ "    Main titular: " + mainTitular.getName() 

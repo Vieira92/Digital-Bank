@@ -1,13 +1,13 @@
-package com.rumos.bank.administration.services;
+package com.rumos.bank.service;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 
-import com.rumos.bank.administration.models.Account;
-import com.rumos.bank.administration.models.Client;
 import com.rumos.bank.dao.ClientDao;
 import com.rumos.bank.dao.DaoFactory;
+import com.rumos.bank.model.Account;
+import com.rumos.bank.model.Client;
 
 public class ClientService {
 
@@ -28,6 +28,15 @@ public class ClientService {
 			}
 		}
 		return null;
+	}
+
+	public void deleteClient(Client client) {
+		if (getClientAccounts(client).isEmpty()) {
+			clientDao.deleteByNif(client.getNif());
+		} 
+		else {
+			System.out.println("Client id: " + client.getId_client() + " has accounts, can't be deleted");
+		}
 	}
 
 	public void editName(Client client, String name) {
@@ -122,9 +131,6 @@ public class ClientService {
 	}
 
 	public List<Account> getClientAccounts(Client client) {
-		List<Account> list = clientDao.findClientAccounts(client.getId_client());
-		return list;
-
+		return clientDao.findClientAccounts(client.getId_client());
 	}
 }
-

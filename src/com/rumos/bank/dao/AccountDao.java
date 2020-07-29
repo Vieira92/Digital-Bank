@@ -2,10 +2,10 @@ package com.rumos.bank.dao;
 
 import java.util.List;
 
-import com.rumos.bank.administration.models.Account;
-import com.rumos.bank.administration.models.Client;
-import com.rumos.bank.administration.models.CreditCard;
-import com.rumos.bank.administration.models.DebitCard;
+import com.rumos.bank.model.Account;
+import com.rumos.bank.model.Client;
+import com.rumos.bank.model.CreditCard;
+import com.rumos.bank.model.DebitCard;
 
 public interface AccountDao {
 

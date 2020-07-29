@@ -9,13 +9,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rumos.bank.administration.models.Account;
-import com.rumos.bank.administration.models.Client;
-import com.rumos.bank.administration.models.CreditCard;
-import com.rumos.bank.administration.models.DebitCard;
 import com.rumos.bank.dao.AccountDao;
 import com.rumos.bank.db.DB;
 import com.rumos.bank.db.DbException;
+import com.rumos.bank.model.Account;
+import com.rumos.bank.model.Client;
+import com.rumos.bank.model.CreditCard;
+import com.rumos.bank.model.DebitCard;
 
 public class AccountDaoJDBC implements AccountDao {
 
@@ -42,7 +42,6 @@ public class AccountDaoJDBC implements AccountDao {
 			if (rowsAffected > 0) {
 				ResultSet rs = st.getGeneratedKeys();
 				if (rs.next()) {
-//						int id = rs.getInt(1);
 					Account newAccount = new Account(rs.getInt(1), account.getMainTitular(), account.getBalance(),
 							account.getCreation());
 					return newAccount;

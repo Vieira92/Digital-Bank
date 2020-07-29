@@ -1,10 +1,10 @@
-package com.rumos.bank.administration.services;
+package com.rumos.bank.service;
 
-import com.rumos.bank.administration.models.Account;
-import com.rumos.bank.administration.models.Client;
-import com.rumos.bank.administration.models.DebitCard;
 import com.rumos.bank.dao.CardsDao;
 import com.rumos.bank.dao.DaoFactory;
+import com.rumos.bank.model.Account;
+import com.rumos.bank.model.Client;
+import com.rumos.bank.model.DebitCard;
 
 public class DebitCardService {
 
@@ -12,7 +12,7 @@ public class DebitCardService {
 
 		CardsDao cardsDao = DaoFactory.createCardsDao();
 
-		if (!cardsDao.verifyDebitCard(titular.getId_client())) {
+		if (!cardsDao.verifyClientCard(titular.getId_client(), "D")) {
 			DebitCard debitCard = new DebitCard(account, titular);
 			debitCard = cardsDao.insert(debitCard);
 			if (debitCard != null) {
@@ -27,12 +27,4 @@ public class DebitCardService {
 		CardsDao cardsDao = DaoFactory.createCardsDao();
 		cardsDao.deleteById(debitCard.getIdCard());
 	}
-
-//	public Boolean verifyDebitCard(Client client) {
-//		if (client.getDebitCard() != null) {
-//			return true;
-//		} else
-//			return false;
-//	}
-
 }

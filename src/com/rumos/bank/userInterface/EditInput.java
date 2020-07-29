@@ -2,14 +2,14 @@ package com.rumos.bank.userInterface;
 
 import java.util.List;
 
-import com.rumos.bank.administration.models.Account;
-import com.rumos.bank.administration.models.Client;
-import com.rumos.bank.administration.models.CreditCard;
-import com.rumos.bank.administration.models.DebitCard;
-import com.rumos.bank.administration.services.AccountService;
-import com.rumos.bank.administration.services.ClientService;
-import com.rumos.bank.administration.services.CreditCardService;
-import com.rumos.bank.administration.services.DebitCardService;
+import com.rumos.bank.model.Account;
+import com.rumos.bank.model.Client;
+import com.rumos.bank.model.CreditCard;
+import com.rumos.bank.model.DebitCard;
+import com.rumos.bank.service.AccountService;
+import com.rumos.bank.service.ClientService;
+import com.rumos.bank.service.CreditCardService;
+import com.rumos.bank.service.DebitCardService;
 import com.rumos.bank.userInterface.ADMinput;
 import com.rumos.bank.userInterface.MenuADM;
 import com.rumos.bank.userInterface.NewInput;
@@ -217,7 +217,8 @@ public class EditInput {
 		System.out.println("\nWant to Delete?");
 		int option = UI.choose();
 		if (option == 1) {
-//			TODO: falta verificação se pode delete tipo plafond dividas
+//			TODO: falta verificação antes do delete tem que se ver plafond e dividas 
+//			e se é o titular da conta se nao for e na boa porque as dividas passam para ele
 			creditCardService.removeCreditCard(creditCard);
 			System.out.println("\nCredit Card deleted!");
 		}
@@ -227,7 +228,8 @@ public class EditInput {
 		System.out.println("\nWant to Delete?");
 		int option = UI.choose();
 		if (option == 1) {
-//			TODO: falta verificação se pode delete tipo dividas cenas
+//			TODO: falta verificação antes do delete tem que se ver dividas 
+//			e se é o titular da conta se nao for e na boa porque as dividas passam para ele
 			debitCardService.removeDebitCard(debitCard);
 			System.out.println("\nDebit Card deleted!");
 		}

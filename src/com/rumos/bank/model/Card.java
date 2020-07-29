@@ -1,4 +1,4 @@
-package com.rumos.bank.administration.models;
+package com.rumos.bank.model;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

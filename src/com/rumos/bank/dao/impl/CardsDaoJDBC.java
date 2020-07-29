@@ -9,14 +9,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rumos.bank.administration.models.Account;
-import com.rumos.bank.administration.models.Card;
-import com.rumos.bank.administration.models.Client;
-import com.rumos.bank.administration.models.CreditCard;
-import com.rumos.bank.administration.models.DebitCard;
 import com.rumos.bank.dao.CardsDao;
 import com.rumos.bank.db.DB;
 import com.rumos.bank.db.DbException;
+import com.rumos.bank.model.Account;
+import com.rumos.bank.model.Card;
+import com.rumos.bank.model.Client;
+import com.rumos.bank.model.CreditCard;
+import com.rumos.bank.model.DebitCard;
 
 public class CardsDaoJDBC implements CardsDao {
 	
@@ -111,15 +111,9 @@ public class CardsDaoJDBC implements CardsDao {
 		}	
 		return null;
 	}
-
+	
 	@Override
-	public void update(DebitCard debitCard) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void update(CreditCard creditCard) {
+	public void update(Card card) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -158,16 +152,17 @@ public class CardsDaoJDBC implements CardsDao {
 	}
 
 	@Override
-	public Boolean verifyDebitCard(int id_client) {
+	public Boolean verifyClientCard(int id_client, String type) {
 
 		PreparedStatement st = null;
 		ResultSet rs = null;
 
 		try {
 			st = conn.prepareStatement(
-					"SELECT * FROM cards WHERE cards.id_client = ? AND cards.type = 'D'");
+					"SELECT * FROM cards WHERE cards.id_client = ? AND cards.type = ?");
 
 			st.setInt(1, id_client);
+			st.setString(2, type);
 			rs = st.executeQuery();
 							
 			if (rs.next()) {				
@@ -183,34 +178,7 @@ public class CardsDaoJDBC implements CardsDao {
 			DB.closeResultSet(rs);
 		}
 	}
-
-	@Override
-	public Boolean verifyCreditCard(int id_client) {
-
-		PreparedStatement st = null;
-		ResultSet rs = null;
-
-		try {
-			st = conn.prepareStatement(
-					"SELECT * FROM cards WHERE cards.id_client = ? AND cards.type = 'C'");
-
-			st.setInt(1, id_client);
-			rs = st.executeQuery();
-							
-			if (rs.next()) {				
-				return true;
-			}
-			
-			return false;
-			
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-	}
-
+	
 	@Override
 	public Boolean verifyaccountCreditCards(int id_account) {
 
@@ -376,50 +344,4 @@ public class CardsDaoJDBC implements CardsDao {
 		}
 	}
 
-//	@Override
-//	public <T extends Card> T findCardById(int id_card) {
-//		PreparedStatement st = null;
-//		ResultSet rs = null;
-//
-//		try {
-//			st = conn.prepareStatement("SELECT C.*, CL.name " 
-//					+ "FROM cards C "
-//					+ "INNER JOIN client CL "
-//					+ "ON C.id_client = CL.id_client "
-//					+ "WHERE C.id_card = ?");
-//
-//			st.setInt(1, id_card);
-//			rs = st.executeQuery();
-//			
-//			if (rs.next()) {
-//				Client client = new Client(rs.getInt("id_client"), rs.getString("name"));
-//				Account account = new Account(rs.getInt("id_account"));
-//				
-//				T card;
-//				if(rs.getString("type") == "C") {
-//				card = new CreditCard(rs.getInt("id_card"), 
-//							account, 
-//							client, 
-//							rs.getDate("creation").toLocalDate(), 
-//							rs.getDate("expire").toLocalDate(), 
-//							rs.getDouble("plafond")); 
-//				} else {
-//				card = new DebitCard(rs.getInt("id_card"), 
-//							account, 
-//							client, 
-//							rs.getDate("creation").toLocalDate(), 
-//							rs.getDate("expire").toLocalDate());
-//				}
-//				return card;
-//			}
-//			
-//			return null;
-//			
-//		} catch (SQLException e) {
-//			throw new DbException(e.getMessage());
-//		} finally {
-//			DB.closeStatement(st);
-//			DB.closeResultSet(rs);
-//		}
-//	}
 }
