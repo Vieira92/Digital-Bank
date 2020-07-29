@@ -1,5 +1,6 @@
 package com.rumos.bank.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -170,30 +171,65 @@ public class AccountService {
 		}
 	}
 
-	public void draw(Account account, Double value) {
-		if (account.getBalance() > value) {
-			account.setBalance(account.getBalance() - value);
-			System.out.println(account);
-		} else {
-			// TODO: tem que sair daqui
-			System.out.println("Don't have that amount in account");
+//	TODO:AINDA se tem que afinar e o transfer nao ta feito
+//	e fazer uma bankaccount pai e passar para la estes metodos
+	
+	public Boolean verifyDayMovement (Account account, Double value) {
+		List<Double> movements = accountDao.findMovementOfDay(account.getId_account(), LocalDate.now());
+
+		Double total = 0.0;
+		if(!movements.isEmpty()) {
+			for (Double d : movements) {
+				total =+ d;
+			}
 		}
+		if (total + value < 400.0) { return true; }
+		return false;
+	}
+	
+	public void draw(Account account, double amount) {
+
+		if (amount <= 200.0) {
+			if (account.getBalance() >= amount) {
+
+				if (verifyDayMovement(account, amount)) {
+					account.setBalance(account.getBalance() - amount);
+					if (accountDao.accountDrawOrDeposit(account, amount, "Draw")) {
+//						TODO: dar autorizacao ao atm para dar o guito
+					} else { System.out.println("There was a problem with the bank try later"); }
+				
+				} else { System.out.println("You can only make a 400 transaction per day");	}
+					
+			} else { System.out.println("Don't have that amount in account"); }
+			
+		} else { System.out.println("Maximum daily withdrawal is 200"); }
 	}
 
 	public void transfer(Account accountFrom, Account accountFor, Double value) {
-		if (accountFrom.getBalance() > value) {
-			accountFrom.setBalance(accountFrom.getBalance() - value);
-			accountFor.setBalance(accountFor.getBalance() + value);
-			System.out.println(accountFrom);
-		} else {
-			// TODO: tem que sair daqui
-			System.out.println("Don't have that amount in account");
+		if (value >= 200.0) {
+			if (accountFrom.getBalance() > value) {
+//				TODO: metodo para verificar a quantidade maxima levantada no dia 
+//				se a quantidade for menor que 400 pode fazer a transaçao 
+//				NAO TA FEITO
+				accountFrom.setBalance(accountFrom.getBalance() - value);
+				accountFor.setBalance(accountFor.getBalance() + value);
+				
+				System.out.println(accountFrom);
+			} else {
+				// TODO: tem que sair daqui
+				System.out.println("Don't have that amount in account");
+			}
+		} else { 
+//			TODO: esta verificacao tem que sair daqui para o passo anterior
+			System.out.println("Maximum value per transaction is 200");
 		}
 
 	}
 
-	public void deposit(Account account, Double value) {
-		account.setBalance(account.getBalance() + value);
-		System.out.println(account);
+	public void deposit(Account account, double amount) {
+		account.setBalance(account.getBalance() + amount);
+		if (accountDao.accountDrawOrDeposit(account, amount, "Deposit")) {
+			System.out.println(account);
+		} else { System.out.println("There was a problem with the bank try later"); }
 	}
 }

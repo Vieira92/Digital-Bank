@@ -6,6 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +61,54 @@ public class AccountDaoJDBC implements AccountDao {
 		return null;
 	}
 
+	@Override
+	public Boolean accountDrawOrDeposit(Account account, double amount, String type) {
+		PreparedStatement st = null;
+		PreparedStatement st2 = null;
+		try {
+			conn.setAutoCommit(false);
+			
+			st = conn.prepareStatement("UPDATE account "
+					+ "SET balance = ? " 
+					+ "WHERE id_account = ?");
+
+			st.setDouble(1, account.getBalance());
+			st.setInt(2, account.getId_account());
+
+			int rows = st.executeUpdate();
+			
+//			TODO: falta saber como converter para dateTime no sql por agora é string
+			LocalDateTime ldt = LocalDateTime.now();
+			String date = ldt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			
+			st2 = conn.prepareStatement("INSERT INTO account_movement "
+					+ "(id_account, date, amount, balance) "
+					+ "VALUES (?, ?, ?, ?)");
+			
+			double x;
+			if (type == "Draw") { x = - amount;} 
+			else if (type == "Deposit") { x = amount; }
+			else { return false; }
+			
+			st2.setInt(1, account.getId_account());
+			st2.setString(2, date);
+			st2.setDouble(3, x);
+			st2.setDouble(4, account.getBalance());
+			
+			int rows1 = st2.executeUpdate();
+			
+			conn.commit();
+			if (rows == 0 || rows1 == 0 ) {
+				return false;
+			} else { return true; }
+
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(st);
+		}
+	}
+	
 	@Override
 	public void deleteById(int id) {
 		PreparedStatement st = null;
@@ -313,6 +364,34 @@ public class AccountDaoJDBC implements AccountDao {
 						rs.getDate("creation").toLocalDate(), rs.getDate("expire").toLocalDate());
 
 				list.add(debitCard);
+			}
+			return list;
+
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+	
+	@Override
+	public List<Double> findMovementOfDay(int id_account, LocalDate date) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+
+		try {
+			st = conn.prepareStatement("SELECT AM.amount " 
+					+ "FROM account_movement AM "  
+					+ "WHERE id_account = ? AND date = ?");
+
+			st.setInt(1, id_account);
+			st.setDate(2, Date.valueOf(date));
+			rs = st.executeQuery();
+
+			List<Double> list = new ArrayList<>();
+			while (rs.next()) {
+				list.add(rs.getDouble("amount"));
 			}
 			return list;
 

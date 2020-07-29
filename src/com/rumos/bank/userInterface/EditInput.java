@@ -137,9 +137,9 @@ public class EditInput {
 				accountService.deposit(account, value);
 				break;
 			case 6:
-				System.out.print("\nEnter the Draw value: ");
-				value = UI.getDouble();
-				accountService.draw(account, value);
+				System.out.print("\nEnter the Draw amount: ");
+				double amount = UI.getDouble();
+				accountService.draw(account, amount);
 				break;
 			case 7:
 				MenuADM.displayMenuADM();
