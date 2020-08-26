@@ -11,10 +11,8 @@ public class CreditCard extends Card implements Serializable {
 	
 	private double plafond;
 	private final String  type = "C";
-//	valor já levantado hoje (dia)
-//	atribuiçao de pin e alteraçao
-//	private Integer pin;
-		
+
+	
 	public CreditCard(Account account, Client titular) {
 		super(account, titular);
 		this.plafond = 500.00;
@@ -52,9 +50,7 @@ public class CreditCard extends Card implements Serializable {
 
 	
 	@Override
-	public int hashCode() {
-		return Objects.hash(idCard);
-	}
+	public int hashCode() { return Objects.hash(idCard); }
 
 	@Override
 	public boolean equals(Object obj) {

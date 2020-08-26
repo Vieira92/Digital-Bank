@@ -19,7 +19,7 @@ public class ADMinput {
 		AccountDao accountDao = DaoFactory.createAccountDao();
 		System.out.print("\nAccount number: ");
 		int id = UI.getInt();
-		Account account = accountDao.findByid(id);
+		Account account = accountDao.findById(id);
 		if (account != null) {
 			System.out.println(account);
 			return account;
@@ -77,9 +77,7 @@ public class ADMinput {
 			System.out.println("\nThis bank has no accounts");
 		} else {
 			System.out.println("\nAll Accounts");
-			for (Account account : accounts) {
-				System.out.println(account);
-			}
+			for (Account account : accounts) { 	System.out.println(account); }
 		}
 	}
 
@@ -90,9 +88,7 @@ public class ADMinput {
 			System.out.println("\nThis bank has no clients and accounts");
 		} else {
 			System.out.println("\nAll Clients:");
-			for (Client client : clients) {
-				System.out.println(client);
-			}
+			for (Client client : clients) { System.out.println(client); }
 		}
 	}
 
@@ -103,9 +99,7 @@ public class ADMinput {
 			System.out.println("\nThis bank has no Credit Cards");
 		} else {
 			System.out.println("\nAll Credit Cards:");
-			for (Card creditCard : creditCards) {
-				System.out.println(creditCard);
-			}
+			for (Card creditCard : creditCards) { System.out.println(creditCard); }
 		}
 	}
 
@@ -116,9 +110,7 @@ public class ADMinput {
 			System.out.println("\nThis bank has no Debit Cards");
 		} else {
 			System.out.println("\nAll Debit Cards:");
-			for (Card debitCard : debitCards) {
-				System.out.println(debitCard);
-			}
+			for (Card debitCard : debitCards) { System.out.println(debitCard); }
 		}
 	}
 }

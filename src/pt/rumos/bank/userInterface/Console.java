@@ -10,6 +10,7 @@ public class Console {
 	{System.out.println("====    Welcome to Rumos Digital Bank    ====\n");}
 	{displayMenu();}
 	
+	
 	public static void displayMenu() {
 		System.out.println("Choose a category:"
 				+ "\n1 - ADM"

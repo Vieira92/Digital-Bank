@@ -1,5 +1,6 @@
 package pt.rumos.bank.userInterface;
 
+import java.util.Random;
 import java.util.Scanner;
 
 public class UI {
@@ -26,16 +27,14 @@ public class UI {
 		while (inputNotNull) {
 			sc.skip("(\r\n|[\n\r\u2028\u2029\u0085])?");
 		    String line = sc.nextLine(); 
-		    try {
-		        number = Integer.parseInt(line);
-		    } catch (NumberFormatException e) {
+		    
+		    try { number = Integer.parseInt(line); } 
+		    catch (NumberFormatException e) {
 		        System.err.println("Wrong input! Input only integer numbers please: " + e.getMessage());
 		        System.out.println("Wrong input! Input only integer numbers please:1 " + e.getMessage());
 		        continue;
 		    }
-		    if (number == 0) {
-		        inputNotNull = false;
-		    }
+		    if (number == 0) { inputNotNull = false; }
 		    return number;
 		}
 		return number;
@@ -47,24 +46,30 @@ public class UI {
 		while (inputNotNull) {
 			sc.skip("(\r\n|[\n\r\u2028\u2029\u0085])?");
 		    String line = sc.nextLine();    
-		    try {
-		        number = Double.parseDouble(line);
-		    } catch (NumberFormatException e) {
-		        System.err.println("Wrong input! Input only floating numbers please: " + e.getMessage());
+		    
+		    try { number = Double.parseDouble(line); } 
+		    catch (NumberFormatException e) {		        
 		        System.out.println("Wrong input! Input only floating numbers please:1 " + e.getMessage());
 		        continue;
 		    }
-		    if (number == 0.0) {
-		        inputNotNull = false;
-		    }
+		    if (number == 0.0) { inputNotNull = false; }
 		    return number;
 		}
 		return number;
 	}
 
 	public static String scanLine() {
-//		sc.nextLine();
 		sc.skip("(\r\n|[\n\r\u2028\u2029\u0085])?");
 		return sc.nextLine();
+	}
+	
+	public static String generatePass() {
+		Random random = new Random();
+		String pass = "";
+		for (int i = 0; i < 4; i++ ) {
+			String r = String.valueOf(random.nextInt(10));
+			pass = pass.concat(r);
+		}
+		return pass;
 	}
 }

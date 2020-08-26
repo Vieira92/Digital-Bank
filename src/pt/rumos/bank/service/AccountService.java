@@ -11,6 +11,7 @@ import pt.rumos.bank.model.Account;
 import pt.rumos.bank.model.Client;
 import pt.rumos.bank.model.CreditCard;
 import pt.rumos.bank.model.DebitCard;
+import pt.rumos.bank.model.Movement;
 
 public class AccountService {
 
@@ -28,6 +29,7 @@ public class AccountService {
 		accountDao = DaoFactory.createAccountDao();
 	}
 
+	
 	public Account newAccount(Client mainTitular, double balance, ArrayList<Client> otherTitulars,
 			ArrayList<Client> debitCards, ArrayList<Client> creditCards) {
 
@@ -45,27 +47,28 @@ public class AccountService {
 					}
 				}
 
-				for (Client client : debitCards) {
-					DebitCard debitCard = debitCardService.newDebitCard(account, client);
-					if (debitCard != null) {
-						account.addDebitCard(debitCard);
+				if (!debitCards.isEmpty()) {
+					for (Client client : debitCards) {
+						DebitCard debitCard = debitCardService.newDebitCard(account, client);
+						if (debitCard != null) {
+							account.addDebitCard(debitCard);
+						}
 					}
 				}
-
-				for (Client client : creditCards) {
-					CreditCard creditCard = creditCardService.newCreditCard(account, client);
-					if (creditCard != null) {
-						account.addCreditCard(creditCard);
+				
+				if (!creditCards.isEmpty()) {
+					for (Client client : creditCards) {
+						CreditCard creditCard = creditCardService.newCreditCard(account, client);
+						if (creditCard != null) {
+							account.addCreditCard(creditCard);
+						}
 					}
 				}
 				return account;
 			}
 		}
 		return null;
-
 	}
-
-	// ----------------------------------------------------------------------
 
 	public Boolean addOtherTitular(Account account, Client client) {
 		if (accountDao.findTitularByAccountId(account.getId_account()) != client) {
@@ -101,7 +104,6 @@ public class AccountService {
 		List<Client> accountClients = getAccountClients(account);
 
 		if (client != account.getMainTitular() && accountClients.contains(client)) {
-
 			List<DebitCard> accountDebitCards = getAccountDebitCards(account);
 			List<CreditCard> accountCreditCards = getAccountCreditCards(account);
 
@@ -135,17 +137,13 @@ public class AccountService {
 
 	public void removeAccount(Account account) {
 		Client titular = account.getMainTitular();
-		
 		List<Client> accountClients = getAccountClients(account);
 
 		accountClients.remove(titular);
-		for (Client c : accountClients) {
-			removeOtherHolder(account, c);
-		}
+		for (Client c : accountClients) { removeOtherHolder(account, c); }
 
 		List<DebitCard> accountDebitCards = getAccountDebitCards(account);
 		List<CreditCard> accountCreditCards = getAccountCreditCards(account);
-
 
 		for (DebitCard debitCard : accountDebitCards) {
 			if (debitCard.getTitular().equals(titular)) {
@@ -166,38 +164,33 @@ public class AccountService {
 		accountDao.deleteAccount_client(account.getId_account(), account.getMainTitular().getId_client());
 		accountDao.deleteById(account.getId_account());	
 
-		if (titularAccounts.isEmpty()) {
-			clientService.deleteClient(titular); 
-		}
+		if (titularAccounts.isEmpty()) { clientService.deleteClient(titular); }
 	}
-
-//	TODO:AINDA se tem que afinar e o transfer nao ta feito
-//	e fazer uma bankaccount pai e passar para la estes metodos
 	
-	public List<String> consultMovements (Account account) {
+	public List<Movement> consultMovements (Account account) {
 		return accountDao.consultAccountMovement(account.getId_account());
 	}
 	
 	public Boolean verifyDayMovement (Account account, Double value) {
-		List<Double> movements = accountDao.findMovementOfDay(account.getId_account(), LocalDate.now());
+		List<Movement> movements = accountDao.findMovementOfDay(account.getId_account(), LocalDate.now());
 
 		Double total = 0.0;
 		if(!movements.isEmpty()) {
-			for (Double d : movements) {
-				total =+ d;
-			}
+			for (Movement m : movements) { total =+  Double.parseDouble(m.getAmount()); }
 		}
+		
 		if (total + value < 400.0) { return true; }
 		return false;
 	}
 	
-	public void draw(Account account, double amount) {
+	public Boolean draw(Account account, double amount) {
 		if (amount <= 200.0) {
 			if (account.getBalance() > amount) {
 				if (verifyDayMovement(account, amount)) {
 					account.setBalance(account.getBalance() - amount);
 					if (accountDao.accountDrawOrDeposit(account, amount, "Draw")) {
 						System.out.println(account);
+						return true;
 //						TODO: dar autorizacao ao atm para dar o guito e talao
 					} else { System.out.println("There was a problem with the bank try later"); }
 				
@@ -206,18 +199,20 @@ public class AccountService {
 			} else { System.out.println("Don't have that amount in account"); }
 			
 		} else { System.out.println("Maximum daily withdrawal is 200"); }
+		return false;
 	}
 
-	public void transfer(Account accountFrom, Account accountFor, double amount) {
+	public Boolean transfer(Account accountFrom, Account accountFor, double amount) {
 		if (amount <= 200.0) {
 			if (accountFrom.getBalance() > amount) {
 				if (verifyDayMovement(accountFrom, amount)) {
 					accountFrom.setBalance(accountFrom.getBalance() - amount);
 					accountFor.setBalance(accountFor.getBalance() + amount);
-//					TODO: metodo de transferencia
+					
 					if(accountDao.accountTransfer(accountFrom, accountFor, amount)) {
 //						TODO: dar autorização para o atm imprimir talao
-						System.out.println(accountFrom);	
+						System.out.println(accountFrom);
+						return true;
 					} else { System.out.println("There was a problem with the bank try later"); }
 					
 				} else {  System.out.println("You can only make a 400 transaction per day"); }
@@ -225,13 +220,15 @@ public class AccountService {
 			} else { System.out.println("Don't have that amount in account"); }
 			
 		} else { System.out.println("Maximum value per transaction is 200"); }
-
+		return false;
 	}
 
-	public void deposit(Account account, double amount) {
+	public Boolean deposit(Account account, double amount) {
 		account.setBalance(account.getBalance() + amount);
 		if (accountDao.accountDrawOrDeposit(account, amount, "Deposit")) {
 			System.out.println(account);
+			return true;
 		} else { System.out.println("There was a problem with the bank try later"); }
+		return false;
 	}
 }

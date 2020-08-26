@@ -18,13 +18,9 @@ public class Account  implements Serializable {
 	private List<Client> otherTitulars = new ArrayList<>();
 	private List<DebitCard> debitCards = new ArrayList<>();
 	private List<CreditCard> creditCards = new ArrayList<>();
-
 	
-
 	
-	public Account(int id_account) {
-		this.id_account = id_account;
-	}
+	public Account(int id_account) { this.id_account = id_account; }
 	
 	public Account(Client mainTitular, double balance) {
 		this.mainTitular = mainTitular;
@@ -48,11 +44,9 @@ public class Account  implements Serializable {
 				+ "  Id: " + mainTitular.getId_client()
 				+ "    Balance: " + String.format("%.2f", balance));
 		
-		String account = sb.toString();
-		return account;
+		return sb.toString();
 	}
 	
-	//------------------------------------------------------
 	
 	public int getId_account() { return id_account;	}
 
@@ -66,7 +60,7 @@ public class Account  implements Serializable {
 	
 	public LocalDate getCreation() { return creation; }
 	
-	//---------------------------------------------------
+	//-----------------------------------------------------------------------------------
 	
 	public void addOtherTitular(Client otherTitular) { otherTitulars.add(otherTitular);	}
 	
@@ -86,10 +80,9 @@ public class Account  implements Serializable {
 	
 	public List<CreditCard> getCreditCards() { return creditCards;	}
 
+	
 	@Override
-	public int hashCode() {
-		return Objects.hash(id_account);
-	}
+	public int hashCode() { return Objects.hash(id_account); }
 
 	@Override
 	public boolean equals(Object obj) {
@@ -99,6 +92,4 @@ public class Account  implements Serializable {
 		Account other = (Account) obj;
 		return id_account == other.id_account;
 	}
-	
-
 }

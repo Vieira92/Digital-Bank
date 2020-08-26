@@ -20,12 +20,9 @@ public class Client implements Serializable {
 	private String telephone;
 	private String occupation;
 	private LocalDate creation;
-//	private String password;
 	private CreditCard creditCard;
 	private DebitCard debitCard;
 	private List<Account> accounts = new ArrayList<>();
-	
-
 	
 	
 	public Client(int id_client, String name) {
@@ -60,16 +57,18 @@ public class Client implements Serializable {
 	
 	@Override
 	public String toString() {
-
 		StringBuilder sb = new StringBuilder();
-		sb.append("Id: " + id_client 
-				+ "   " + name
-				+ "   Nif: " + nif
-				+ "   Birth: " + DateTimeFormatter.ofPattern("dd-MM-yyyy").format(birth)
-				+ "   Email: " + email 
-				+ "   Cellphone: " + cellphone 
-				+ "   Telephone: " + telephone 
-				+ "   Occupation: " + occupation);
+		sb.append("Id: " + id_client + "   " + name);
+		
+		if(nif != null) {
+			sb.append("   Nif: " + nif
+					+ "   Birth: " + DateTimeFormatter.ofPattern("dd-MM-yyyy").format(birth)
+					+ "   Email: " + email 
+					+ "   Cellphone: " + cellphone 
+					+ "   Telephone: " + telephone 
+					+ "   Occupation: " + occupation
+					);
+		}
 		
 		if(debitCard != null) {
 			sb.append("\nDebitCard  Id: " + debitCard.getIdCard() 
@@ -85,17 +84,17 @@ public class Client implements Serializable {
 					+ "    Expire: "  + creditCard.getFormattedExpire());
 		}
 		
-		for(Account account : accounts) {
-			sb.append("\nAccount Id: " + account.getId_account());
-			sb.append("    Main titular: " + account.getMainTitular().name);
-			sb.append("    Balance: " + String.format("%.2f", account.getBalance()));
+		if(!accounts.isEmpty()) {
+			for(Account account : accounts) {
+				sb.append("\nAccount Id: " + account.getId_account());
+				sb.append("    Main titular: " + account.getMainTitular().name);
+				sb.append("    Balance: " + String.format("%.2f", account.getBalance()));
+			}
 		}
-		
-		String client = sb.toString();
-		return client;
+	
+		return sb.toString();
 	}
 		
-
 
 	public int getId_client() {	return id_client; }
 
@@ -134,11 +133,8 @@ public class Client implements Serializable {
 	public void setCreditCard(CreditCard creditCard) { this.creditCard = creditCard; }
 	
 
-
 	@Override
-	public int hashCode() {
-		return Objects.hash(id_client, name);
-	}
+	public int hashCode() { return Objects.hash(id_client, name); }
 
 	@Override
 	public boolean equals(Object obj) {
@@ -148,5 +144,4 @@ public class Client implements Serializable {
 		Client other = (Client) obj;
 		return id_client == other.id_client && Objects.equals(name, other.name);
 	}
-	
 }

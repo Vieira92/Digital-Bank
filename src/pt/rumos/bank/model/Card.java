@@ -3,8 +3,10 @@ package pt.rumos.bank.model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import pt.rumos.bank.dao.CardsDao;
+import pt.rumos.bank.dao.DaoFactory;
+
 public abstract class Card {
-	
 	protected int idCard;
 	protected Account account;
 	protected Client titular;
@@ -18,6 +20,7 @@ public abstract class Card {
 		this.creation =  LocalDate.now();
 		this.expire = creation.plusYears(4);
 	}
+		
 	
 	public int getIdCard() { return idCard; }
 
@@ -40,4 +43,15 @@ public abstract class Card {
 	}
 
 	public void setExpire(LocalDate expire) { this.expire = expire;	}
+	
+	
+	public Boolean changePin(int id_card, String pin) {
+		CardsDao cardsDao = DaoFactory.createCardsDao();
+		return cardsDao.changePin(id_card, pin);
+	}
+	
+	public Boolean verifyPin(int id_card, String pin) {
+		CardsDao cardsDao = DaoFactory.createCardsDao();
+		return cardsDao.verifyCardPin(id_card, pin);
+	}
 }

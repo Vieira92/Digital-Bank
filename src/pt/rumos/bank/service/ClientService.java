@@ -8,22 +8,23 @@ import pt.rumos.bank.dao.ClientDao;
 import pt.rumos.bank.dao.DaoFactory;
 import pt.rumos.bank.model.Account;
 import pt.rumos.bank.model.Client;
+import pt.rumos.bank.userInterface.UI;
 
 public class ClientService {
 
 	private ClientDao clientDao;
 
-	public ClientService() {
-		clientDao = DaoFactory.createClientDao();
-	}
+	public ClientService() { clientDao = DaoFactory.createClientDao(); }
 
-	public Client newClient(String name, LocalDate birth, String nif, String email, String cellphone, String telephone,
-			String occupation) {
+	
+	public Client newClient(String name, LocalDate birth, String nif, String email, 
+			String cellphone, String telephone, String occupation) {
 
 		if (clientDao.findByNif(nif) == null) {
 			Client client = new Client(name, birth, nif, email, cellphone, telephone, occupation);
-			client = clientDao.insert(client);
+			client = clientDao.insert(client, UI.generatePass());
 			if (client != null) {
+				System.out.println("\nMethod that sends the client pass via email");
 				return client;
 			}
 		}
@@ -31,11 +32,11 @@ public class ClientService {
 	}
 
 	public void deleteClient(Client client) {
-		if (getClientAccounts(client).isEmpty()) {
-			clientDao.deleteByNif(client.getNif());
-		} 
+		if (getClientAccounts(client).isEmpty()) { clientDao.deleteByNif(client.getNif()); } 
 		else {
-			System.out.println("Client id: " + client.getId_client() + " has accounts, can't be deleted");
+			System.out.println("Client id: " 
+					+ client.getId_client() 
+					+ " has accounts, can't be deleted");
 		}
 	}
 
@@ -87,9 +88,7 @@ public class ClientService {
 		Period period = Period.between(birth, now);
 		if (period.getYears() >= 2 && period.getYears() < 120) {
 			return true;
-		} else {
-			return false;
-		}
+		} else { return false; }
 	}
 
 	public Boolean verifyAge(Client client) {
@@ -115,9 +114,7 @@ public class ClientService {
 		}
 		if (count == 1 && email.contains(".")) {
 			return true;
-		} else {
-			return false;
-		}
+		} else { return false; }
 	}
 
 	public Boolean verifyTitular(Client client) {
@@ -125,11 +122,17 @@ public class ClientService {
 
 		if (clientDao.verifyTitular(client)) {
 			return true;
-		} else {
-			return false;
-		}
+		} else { return false; }
+	}
+	
+	public Boolean changePin(int id_client, String pin) {
+		return clientDao.changePin(id_client, pin);
 	}
 
+	public Boolean verifyPin(int id_client, String pin) {
+		return clientDao.verifyClientPin(id_client, pin);
+	}
+	
 	public List<Account> getClientAccounts(Client client) {
 		return clientDao.findClientAccounts(client.getId_client());
 	}

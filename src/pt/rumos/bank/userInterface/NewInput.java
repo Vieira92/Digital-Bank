@@ -23,7 +23,7 @@ public class NewInput {
 	private DebitCardService debitCardService;
 	private MenuADM menuADM;
 	private ADMinput admInput;
-	
+
 	public NewInput() {
 		clientService = new ClientService();
 		accountService = new AccountService();
@@ -33,6 +33,7 @@ public class NewInput {
 		admInput = new ADMinput();
 	}
 
+	
 	public Client newClient() {
 
 		System.out.println("\nNew Client:");
@@ -57,7 +58,7 @@ public class NewInput {
 		// TODO: falta metodo de verificacao formataçao de nif
 
 		System.out.print("Email: ");
-		String email = UI.scanLine(); 
+		String email = UI.scanLine();
 		// TODO: na verificacao falta por que no mail nao pode haver espacos por exemplo
 		while (!clientService.verifyEmail(email)) {
 			System.out.println("Invalid email. write again:");
@@ -79,110 +80,104 @@ public class NewInput {
 
 		return clientService.newClient(name, birth, nif, email, cellphone, telephone, occupation);
 	}
-	
+
 	public boolean verifyTitularAccount(Client client) {
 		if (clientService.verifyAge(client)) {
 			if (clientService.verifyTitular(client) == false) {
 				return true;
-			} else {
-				System.out.println("\nClient can't hold two titular accounts");
-			}
-		} else {
-			System.out.println("\nClient must have 18 years" + "\ncan't be an account titular");
-		}
-		return false;	
+			} else { System.out.println("\nClient can't hold two titular accounts"); }
+			
+		} else { System.out.println("\nClient must have 18 years" + "\ncan't be an account titular"); }
+		return false;
 	}
 
 	public Account newAccount(Client client) {
-				System.out.println("\nNew Account:");
+		System.out.println("\nNew Account:");
 
-				ArrayList<Client> otherTitulars = new ArrayList<>();
-				ArrayList<Client> debitCards = new ArrayList<>();
-				ArrayList<Client> creditCards = new ArrayList<>();
+		ArrayList<Client> otherTitulars = new ArrayList<>();
+		ArrayList<Client> debitCards = new ArrayList<>();
+		ArrayList<Client> creditCards = new ArrayList<>();
 
-				System.out.print("Enter the deposit value: ");
-				double balance = UI.getDouble();
-				while (balance < 50.00) {
-					System.out.println("\nThe minimum value to open an account is 50.00 $");
-					System.out.println("Want to cancel?");
-					int choose = UI.choose();
-					if (choose == 1) {
-						clientService.deleteClient(client);
-						MenuADM.displayMenuADM();
-						menuADM.selection();
-					}
-					System.out.print("\nEnter the deposit value: ");
-					balance = UI.getDouble();
+		System.out.print("Enter the deposit value: ");
+		double balance = UI.getDouble();
+		while (balance < 50.00) {
+			System.out.println("\nThe minimum value to open an account is 50.00 $");
+			System.out.println("Want to cancel?");
+			int choose = UI.choose();
+			if (choose == 1) {
+				clientService.deleteClient(client);
+				MenuADM.displayMenuADM();
+				menuADM.selection();
+			}
+			System.out.print("\nEnter the deposit value: ");
+			balance = UI.getDouble();
+		}
+
+		System.out.println("\nDo you want Debit Card? ");
+		int option = UI.choose();
+		if (option == 1) { debitCards.add(client); }
+
+		System.out.println("\nDo you want Credit Card?");
+		option = UI.choose();
+		if (option == 1) { creditCards.add(client); }
+
+//		--------------------------------------------------------------------------------------------
+		
+		System.out.println("\nSecundary Titulars?");
+		option = UI.choose();
+		if (option == 1) {
+			System.out.println("\nMaximum of 4 secondary titulars" + "\nHow many titulars? ");
+			int number = UI.getInt();
+			while (number > 4 || number < 0) {
+				System.out.print("\nWrong option. Choose again: ");
+				number = UI.getInt();
+			}
+			
+			Client otherClient;
+			for (int i = 0; i < number; i++) {
+				System.out.println("\n1 - New client" + "\n2 - Existing client" + "\n3 - Pass");
+				option = UI.getInt();
+				while (option != 1 && option != 2 && option != 3) {
+					System.out.print("\nWrong option. Choose again: ");
+					option = UI.getInt();
 				}
 
-				System.out.println("\nDo you want Debit Card? ");
-				int option = UI.choose();
-				if (option == 1) {
-					debitCards.add(client);
-				}
-
-				System.out.println("\nDo you want Credit Card?");
-				option = UI.choose();
-				if (option == 1) {
-					creditCards.add(client);
-				}
-				
-//				----------------------------------------------------------------------------------------------------
-				
-				System.out.println("\nSecundary Titulars?");
-				option = UI.choose();
-				if (option == 1) {
-					System.out.println("\nMaximum of 4 secondary titulars" + "\nHow many titulars? ");
-					int number = UI.getInt();
-					while (number > 4 || number < 0) {
-						System.out.print("\nWrong option. Choose again: ");
-						number = UI.getInt();
-					}
-					Client otherClient;
-					for (int i = 0; i < number; i++) {
-						System.out.println("\n1 - New client" + "\n2 - Existing client" + "\n3 - Pass");
-						option = UI.getInt();
-						while (option != 1 && option != 2 && option != 3) {
-							System.out.print("\nWrong option. Choose again: ");
-							option = UI.getInt();
+				if (option == 1) { // Novo cliente secundario
+					otherClient = newClient();
+					if (otherClient != null) {
+						System.out.println("\nDo you want Debit Card? ");
+						option = UI.choose();
+						if (option == 1) { debitCards.add(otherClient); }
+						
+						if (creditCards.size() <= 2) {
+							System.out.println("\nDo you want Credit Card?");
+							option = UI.choose();
+							if (option == 1) { creditCards.add(otherClient); }
 						}
-
-						if (option == 1) { // Novo cliente secundario
-							otherClient = newClient();
-							if (otherClient != null) {
-								System.out.println("\nDo you want Debit Card? ");
-								option = UI.choose();
-								if (option == 1) { debitCards.add(otherClient);	}
-								
-								if (creditCards.size() <= 2) {
-									System.out.println("\nDo you want Credit Card?");
-									option = UI.choose();
-									if (option == 1) { creditCards.add(otherClient); }
-								}
-								otherTitulars.add(otherClient);
-							}		
-						} else if (option == 2) { // cliente existente
-							otherClient = admInput.showClient();
-							if (!otherTitulars.contains(otherClient)) {
-								if (otherClient != null && otherClient != client) {
-									System.out.println("\nDo you want Debit Card?");
-									option = UI.choose();
-									
-									if (option == 1) { debitCards.add(otherClient); }
-									
-									if (creditCards.size() <= 2) {
-										System.out.println("\nDo you want Credit Card?");
-										option = UI.choose();
-										if (option == 1) { creditCards.add(otherClient); }
-									}
-									otherTitulars.add(otherClient);
-								}
-							} else { System.out.println("This client has already been added to the account"); }
-	
-						} else { System.out.println("Pass"); }
+						otherTitulars.add(otherClient);
 					}
-				}
-				return accountService.newAccount(client, balance, otherTitulars, debitCards, creditCards);
+					
+				} else if (option == 2) { // cliente existente
+					otherClient = admInput.showClient();
+					if (!otherTitulars.contains(otherClient)) {
+						if (otherClient != null && otherClient != client) {
+							System.out.println("\nDo you want Debit Card?");
+							option = UI.choose();
+							if (option == 1) { debitCards.add(otherClient); }
+
+							if (creditCards.size() <= 2) {
+								System.out.println("\nDo you want Credit Card?");
+								option = UI.choose();
+								if (option == 1) { creditCards.add(otherClient); }
+							}
+							otherTitulars.add(otherClient);
+						}
+					} else { System.out.println("This client has already been added to the account"); }
+
+				} else { System.out.println("Pass"); }
+			}
+		}
+		return accountService.newAccount(client, balance, otherTitulars, debitCards, creditCards);
 	}
 
 	public void newCreditCard() {
@@ -192,15 +187,12 @@ public class NewInput {
 
 			if (account != null && accountService.getAccountClients(account).contains(client)) {
 				CreditCard creditCard = creditCardService.newCreditCard(account, client);
-				if (creditCard != null) {
-					System.out.println(creditCard);
-				} else {
-					System.out.println("Can´t make the Credit Card!");
-				}
+				if (creditCard != null) { System.out.println(creditCard); } 
+				else { System.out.println("Can´t make the Credit Card!"); }
 			}
 		}
 	}
-	
+
 	public void newDebitCard() {
 		Client client = admInput.showClient();
 		if (client != null) {
@@ -208,12 +200,9 @@ public class NewInput {
 
 			if (account != null && accountService.getAccountClients(account).contains(client)) {
 				DebitCard debitCard = debitCardService.newDebitCard(account, client);
-				if (debitCard != null) {
-					System.out.println(debitCard);
-				} else {
-					System.out.println("Can't make Debit Card!");
-				}
-			} 
+				if (debitCard != null) { System.out.println(debitCard); } 
+				else { System.out.println("Can't make Debit Card!"); }
+			}
 		}
 	}
 }

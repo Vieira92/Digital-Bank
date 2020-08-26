@@ -19,17 +19,18 @@ public class ClientDaoJDBC implements ClientDao {
 
 	private Connection conn;
 
-	public ClientDaoJDBC(Connection conn) {
-		this.conn = conn;
-	}
+	public ClientDaoJDBC(Connection conn) { this.conn = conn; }
 
+	
 	@Override
-	public Client insert(Client client) {
+	public Client insert(Client client, String pin) {
 		PreparedStatement st = null;
+		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(
-					"INSERT INTO client " + "(name, nif, birth, email, cellphone, telephone, occupation, created) " + "VALUES "
-							+ "(?, ?, ?, ?, ?, ?, ?, ?)",
+			st = conn.prepareStatement( "INSERT INTO client " 
+					+ "(name, nif, birth, email, cellphone, telephone, occupation, created) " 
+					+ "VALUES "
+					+ "(?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 
 			st.setString(1, client.getName());
@@ -39,12 +40,10 @@ public class ClientDaoJDBC implements ClientDao {
 			st.setString(5, client.getCellphone());
 			st.setString(6, client.getTelephone());
 			st.setString(7, client.getOccupation());
-			st.setDate(8, Date.valueOf(client.getCreation()));
-
-			int rowsAffected = st.executeUpdate();
-
-			if (rowsAffected > 0) {
-				ResultSet rs = st.getGeneratedKeys();
+			st.setDate(8, Date.valueOf(client.getCreation()));		
+			
+			if (st.executeUpdate() > 0) {
+				rs = st.getGeneratedKeys();
 				if (rs.next()) {
 					Client newClient = new Client(rs.getInt(1), 
 							client.getName(), 
@@ -55,19 +54,36 @@ public class ClientDaoJDBC implements ClientDao {
 							client.getTelephone(), 
 							client.getOccupation(), 
 							client.getCreation());
-					return newClient;
+					
+					if (insertPin(newClient, pin)) { return newClient; }
 				}
-				DB.closeResultSet(rs);
-			} else {
-				throw new DbException("Unexpected error! No rows affected!");
-			}
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
+				return null;	
+			} else { throw new DbException("Unexpected error! No rows affected!"); }
+			
+		} catch (SQLException e) { throw new DbException(e.getMessage());
 		} finally {
+			DB.closeResultSet(rs);
 			DB.closeStatement(st);
 		}
-		return null;
 	}
+	
+	private boolean insertPin(Client client, String pin) {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement("INSERT INTO client_pass "
+					+ "(id_client, pass) "
+					+ "VALUES (?, ?)");
+			
+			st.setInt(1, client.getId_client());
+			st.setString(2, pin);
+			
+			if(st.executeUpdate() > 0) { return true; } 
+			else { return false; }
+			
+		} catch (SQLException e) { throw new DbException(e.getMessage()); 
+		} finally {	DB.closeStatement(st); }
+	}
+	
 
 	@Override
 	public void update(Client client) {
@@ -86,11 +102,8 @@ public class ClientDaoJDBC implements ClientDao {
 
 			st.executeUpdate();
 
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
-		} finally {
-			DB.closeStatement(st);
-		}
+		} catch (SQLException e) { throw new DbException(e.getMessage());
+		} finally {	DB.closeStatement(st); }
 	}
 
 	@Override
@@ -103,31 +116,23 @@ public class ClientDaoJDBC implements ClientDao {
 
 			int rows = st.executeUpdate();
 
-			if (rows == 0) {
-				throw new DbException("Unexpected error! No rows affected!");
-			}
+			if (rows == 0) { throw new DbException("Unexpected error! No rows affected!"); }
 
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
-		} finally {
-			DB.closeStatement(st);
-		}
+		} catch (SQLException e) { throw new DbException(e.getMessage());
+		} finally {	DB.closeStatement(st); }
 	}
 
 	@Override
 	public Client findByNif(String nif) {
 		PreparedStatement st = null;
 		ResultSet rs = null;
-
 		try {
-			st = conn.prepareStatement(
-					"SELECT * FROM client WHERE client.nif = ?");
+			st = conn.prepareStatement("SELECT * FROM client WHERE client.nif = ?");
 
 			st.setString(1, nif);
 			rs = st.executeQuery();
 			
 			if (rs.next()) {
-				 
 				Client client = new Client(rs.getInt("id_client"), 
 						rs.getString("name"), 
 						rs.getDate("birth").toLocalDate(), 
@@ -140,43 +145,75 @@ public class ClientDaoJDBC implements ClientDao {
 		
 				return client;
 			}
-			
 			return null;
 			
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
+		} catch (SQLException e) { throw new DbException(e.getMessage());
 		} finally {
-			DB.closeStatement(st);
 			DB.closeResultSet(rs);
-//			TODO: DB.closeConnection();  ver porque tem que fechar em algum lado 
-//			ainda nao sei onde
+			DB.closeStatement(st);
 		}
 	}
 
 	@Override
-	public Boolean verifyTitular(Client client) {
+	public Boolean changePin(int id_client, String pin) {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement("UPDATE client_pass "
+					+ "SET pass = ? " 
+					+ "WHERE id_client = ?");
 
+			st.setString(1, pin);
+			st.setInt(2, id_client);
+			
+			if(st.executeUpdate() > 0) { return true; }
+			return false;
+			
+		} catch (SQLException e) { throw new DbException(e.getMessage());
+		} finally {	DB.closeStatement(st); }
+	}
+	
+	@Override
+	public Boolean verifyClientPin(int id_client, String pin) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement("SELECT * " 
+					+ "FROM client_pass "
+					+ "WHERE id_client = ?");		
+
+			st.setInt(1, id_client);
+			rs = st.executeQuery();
+			
+			if (rs.next()) {
+				String pass = rs.getString("pass");
+				if (pass.equals(pin)) { return true; }
+			} 
+			return false;
+			
+		} catch (SQLException e) { throw new DbException(e.getMessage());
+		} finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}			
+	}
+	
+	@Override
+	public Boolean verifyTitular(Client client) {
 			PreparedStatement st = null;
 			ResultSet rs = null;
-
 			try {
-				st = conn.prepareStatement(
-						"SELECT * FROM account WHERE account.id_titular = ?");
+				st = conn.prepareStatement("SELECT * FROM account WHERE account.id_titular = ?");
 
 				st.setInt(1, client.getId_client());
 				rs = st.executeQuery();
 								
-				if (rs.next()) {				
-					return true;
-				}
-				
+				if (rs.next()) { return true; }
 				return false;
 				
-			} catch (SQLException e) {
-				throw new DbException(e.getMessage());
+			} catch (SQLException e) { throw new DbException(e.getMessage());
 			} finally {
-				DB.closeStatement(st);
 				DB.closeResultSet(rs);
+				DB.closeStatement(st);
 			}
 	}
 
@@ -184,7 +221,6 @@ public class ClientDaoJDBC implements ClientDao {
 	public List<Account> findClientAccounts(int id_client) {
 		PreparedStatement st = null;
 		ResultSet rs = null;
-
 		try {
 			st = conn.prepareStatement("SELECT AC.id_account " 
 					+ "FROM account_clients AC "
@@ -202,11 +238,10 @@ public class ClientDaoJDBC implements ClientDao {
 			}
 			return list;
 			
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
+		} catch (SQLException e) { throw new DbException(e.getMessage());
 		} finally {
-			DB.closeStatement(st);
 			DB.closeResultSet(rs);
+			DB.closeStatement(st);
 		}			
 	}
 	
@@ -214,7 +249,6 @@ public class ClientDaoJDBC implements ClientDao {
 	public List<Client> findAll() {
 		PreparedStatement st = null;
 		ResultSet rs = null;
-
 		try {
 			st = conn.prepareStatement("SELECT * FROM client ORDER BY id_client");
 
@@ -223,19 +257,25 @@ public class ClientDaoJDBC implements ClientDao {
 			List<Client> list = new ArrayList<>();
 
 			while (rs.next()) {
-
-				Client client = new Client(rs.getInt("id_client"), rs.getString("name"), rs.getDate("birth").toLocalDate(), rs.getString("nif"),
-						rs.getString("email"), rs.getString("cellphone"), rs.getString("telephone"),
-						rs.getString("occupation"), rs.getDate("created").toLocalDate());
-
+				Client client = new Client(rs.getInt("id_client"), 
+						rs.getString("name"), 
+						rs.getDate("birth").toLocalDate(), 
+						rs.getString("nif"),
+						rs.getString("email"), 
+						rs.getString("cellphone"), 
+						rs.getString("telephone"),
+						rs.getString("occupation"), 
+						rs.getDate("created").toLocalDate());
 				list.add(client);
 			}
 			return list;
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
+			
+		} catch (SQLException e) { throw new DbException(e.getMessage());
 		} finally {
-			DB.closeStatement(st);
 			DB.closeResultSet(rs);
+			DB.closeStatement(st);
 		}
 	}
+//	TODO: DB.closeConnection();  ver porque tem que fechar em algum lado 
+//	ainda nao sei onde se fechar aqui estraga tudo!
 }

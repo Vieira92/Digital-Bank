@@ -20,22 +20,15 @@ public class DB {
 				String url = props.getProperty("dburl");
 				conn = DriverManager.getConnection(url, props);	
 			}
-			catch (SQLException e) {
-				throw new DbException(e.getMessage());
-			}
-			
+			catch (SQLException e) { throw new DbException(e.getMessage()); }
 		}
 		return conn;
 	}
 	
 	public static void closeConnection() {
 		if (conn != null) {
-			try {
-				conn.close();	
-			}
-			catch (SQLException e) {
-				throw new DbException(e.getMessage());
-			}
+			try { conn.close(); }
+			catch (SQLException e) { throw new DbException(e.getMessage()); }
 		}
 	}
 	
@@ -45,28 +38,20 @@ public class DB {
 			props.load(fs);
 			return props;
 		}
-		catch (IOException e) {
-			throw new DbException(e.getMessage());
-		}
+		catch (IOException e) { throw new DbException(e.getMessage()); }
 	}
 	
 	public static void closeStatement(Statement st) {
 		if (st != null) {
-			try {
-				st.close();
-			} catch (SQLException e) {
-				throw new DbException(e.getMessage());
-			}
+			try { st.close(); } 
+			catch (SQLException e) { throw new DbException(e.getMessage()); }
 		}
 	}
 	
 	public static void closeResultSet(ResultSet rs) {
 		if (rs != null) {
-			try {
-				rs.close();
-			} catch (SQLException e) {
-				throw new DbException(e.getMessage());
-			}
+			try { rs.close(); } 
+			catch (SQLException e) { throw new DbException(e.getMessage()); }
 		}
 	}
 }
